@@ -161,7 +161,7 @@ const ManageBlogs = () => {
                     body: JSON.stringify(blogData)
                 });
             } else {
-                res = await fetch('http://localhost:5000/api/blogs', {
+                res = await fetch(`${API_BASE_URL}/api/blogs`, {
                     method: 'POST',
                     headers: getHeaders(),
                     body: JSON.stringify(blogData)
@@ -205,7 +205,7 @@ const ManageBlogs = () => {
 
     const togglePublish = async (blog) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/blogs/${blog.id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/blogs/${blog.id}`, {
                 method: 'PUT',
                 headers: getHeaders(),
                 body: JSON.stringify({ published: !blog.published })
@@ -219,7 +219,7 @@ const ManageBlogs = () => {
 
     const toggleFeatured = async (blog) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/blogs/${blog.id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/blogs/${blog.id}`, {
                 method: 'PUT',
                 headers: getHeaders(),
                 body: JSON.stringify({ featured: !blog.featured })
