@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaStar } from "react-icons/fa";
 
@@ -85,7 +86,7 @@ const Feed = () => {
                 approvedReviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
                 if (approvedReviews.length > 0) {
-                    setReviews(approvedReviews.slice(0, 6));
+                    setReviews(approvedReviews.slice(0, 10));
                 } else {
                     setReviews(testimonials);
                 }
@@ -256,10 +257,25 @@ const Feed = () => {
                     </motion.div>
                 )}
             </div>
-            <div className={`-mt-20 pb-14 ${styles.paddingX} flex flex-wrap gap-7`}>
-                {reviews.map((testimonial, index) => (
-                    <FeedbackCard key={testimonial.name + index} index={index} {...testimonial} />
-                ))}
+            <div className={`-mt-20 pb-14 ${styles.paddingX}`}>
+                <div className="flex flex-wrap gap-7">
+                    {reviews.map((testimonial, index) => (
+                        <FeedbackCard key={testimonial.name + index} index={index} {...testimonial} />
+                    ))}
+                </div>
+                {reviews.length > 0 && (
+                    <div className="mt-12 flex justify-center w-full">
+                        <Link to="/testimonials">
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="bg-gradient-to-r from-violet-600 to-purple-600 py-3 px-8 rounded-xl text-white font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all flex items-center gap-2"
+                            >
+                                See All Reviews ✨
+                            </motion.button>
+                        </Link>
+                    </div>
+                )}
             </div>
         </div>
     );
