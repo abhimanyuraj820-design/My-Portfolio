@@ -267,8 +267,8 @@ const Blogs = () => {
                                     </h2>
                                     <Link to={`/blog/${featuredBlog.slug}`}>
                                         <div className="group relative bg-gradient-to-br from-[#1d1836]/90 via-[#231d42]/90 to-[#11071F]/90 backdrop-blur-xl rounded-3xl overflow-hidden border border-violet-500/30 hover:border-violet-500/60 transition-all duration-500 hover:shadow-[0_20px_50px_-15px_rgba(139,92,246,0.4)]">
-                                            <div className="grid md:grid-cols-2 gap-0">
-                                                <div className="relative h-[300px] md:h-full overflow-hidden">
+                                            <div className="flex flex-col md:flex-row h-full">
+                                                <div className="relative w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden">
                                                     {featuredBlog.cover_image ? (
                                                         <img
                                                             src={featuredBlog.cover_image}
@@ -280,9 +280,10 @@ const Blogs = () => {
                                                             <FaBookOpen className="text-8xl text-violet-400/30" />
                                                         </div>
                                                     )}
-                                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#11071F]/80 md:block hidden" />
+                                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#11071F]/90 hidden md:block" />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-[#11071F]/90 to-transparent block md:hidden" />
                                                 </div>
-                                                <div className="p-8 flex flex-col justify-center">
+                                                <div className="p-8 flex flex-col justify-center w-full md:w-1/2">
                                                     {featuredBlog.category && (
                                                         <span className="bg-violet-600 text-white px-4 py-1.5 rounded-full text-xs font-semibold w-fit mb-4">
                                                             {featuredBlog.category}

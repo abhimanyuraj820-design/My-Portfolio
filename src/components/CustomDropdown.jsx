@@ -21,7 +21,7 @@ const CustomDropdown = ({ value, onChange, options, icon: Icon, className = '' }
     return (
         <div className={`relative ${className}`} ref={dropdownRef}>
             <div
-                className={`flex items-center justify-between bg-[#1d1836] border border-white/10 hover:border-violet-500/50 rounded-xl p-3 cursor-pointer transition-all duration-300 shadow-lg min-w-[200px] ${isOpen ? 'border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.2)]' : ''}`}
+                className={`flex items-center justify-between bg-black-200/80 backdrop-blur-md border border-white/10 hover:border-violet-500/50 rounded-xl p-3 cursor-pointer transition-all duration-300 shadow-lg min-w-[200px] ${isOpen ? 'border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.2)] bg-[#1d1836]' : ''}`}
                 onClick={() => setIsOpen(!isOpen)}
             >
                 <div className="flex items-center gap-3">
@@ -48,7 +48,7 @@ const CustomDropdown = ({ value, onChange, options, icon: Icon, className = '' }
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-full mt-2 left-0 w-full min-w-max bg-[#1d1836] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden py-1"
+                        className="absolute top-full mt-2 right-0 sm:left-0 sm:right-auto w-full min-w-max bg-[#11071F]/90 backdrop-blur-xl border border-violet-500/30 rounded-2xl shadow-[0_10px_40px_-10px_rgba(139,92,246,0.4)] z-50 overflow-hidden py-2"
                     >
                         {options.map((option) => (
                             <div
