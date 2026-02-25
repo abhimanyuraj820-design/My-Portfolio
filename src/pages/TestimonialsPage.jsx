@@ -4,21 +4,22 @@ import { Helmet } from "react-helmet-async";
 import { styles } from "../styles";
 import API_BASE_URL from "../config";
 
-import { FaStar, FaQuoteLeft, FaUser, FaPaperPlane } from "react-icons/fa";
+import { FaStar, FaQuoteLeft, FaUser, FaPaperPlane, FaFilter, FaSortAmountDown } from "react-icons/fa";
 import { Navbar, Footer } from "../components";
 
 const FeedbackCard = ({ index, message, name, designation, company, rating }) => (
     <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: index * 0.1 }}
-        className="group"
+        initial={{ opacity: 0, scale: 0.95, y: 30 }}
+        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.5, delay: index * 0.1, type: "spring", stiffness: 100 }}
+        className="group h-full"
     >
-        <div className='relative bg-gradient-to-br from-[#1d1836]/90 to-[#11071F]/90 backdrop-blur-xl p-8 rounded-2xl border border-white/5 hover:border-violet-500/30 transition-all duration-500 hover:shadow-2xl hover:shadow-violet-500/10 hover:-translate-y-2 w-full'>
+        <div className='relative h-full bg-gradient-to-br from-[#1d1836]/90 via-[#231d42]/90 to-[#11071F]/90 backdrop-blur-2xl p-8 rounded-3xl border border-white/5 hover:border-violet-500/40 transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(139,92,246,0.3)] hover:-translate-y-2 w-full flex flex-col justify-between'>
             {/* Quote Icon */}
-            <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-br from-violet-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/30">
-                <FaQuoteLeft className="text-white text-lg" />
+            <div className="absolute -top-5 -right-5 w-16 h-16 bg-gradient-to-br from-violet-600/20 to-purple-600/20 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+            <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 rounded-2xl flex items-center justify-center shadow-[0_10px_20px_rgba(139,92,246,0.5)] transform -rotate-6 group-hover:rotate-0 transition-transform duration-300">
+                <FaQuoteLeft className="text-white text-xl" />
             </div>
 
             <div className='pt-4'>
@@ -60,6 +61,12 @@ const FeedbackCard = ({ index, message, name, designation, company, rating }) =>
 
 const TestimonialsPage = () => {
     const [reviews, setReviews] = useState([]);
+    const [filteredReviews, setFilteredReviews] = useState([]);
+
+    // Feature States
+    const [ratingFilter, setRatingFilter] = useState("all");
+    const [sortBy, setSortBy] = useState("newest");
+
     const [form, setForm] = useState({
         name: "",
         rating: 5,
@@ -80,15 +87,43 @@ const TestimonialsPage = () => {
             if (res.ok) {
                 const data = await res.json();
                 const approvedReviews = data.filter(r => r.isApproved);
-                // Sort by created_at descending
+                // Default descending inside fetch
                 approvedReviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                 setReviews(approvedReviews);
+                setFilteredReviews(approvedReviews);
             }
         } catch (err) {
             console.error(err);
         }
         setFetchLoading(false);
     };
+
+    // Filter and Sort Effect
+    useEffect(() => {
+        let result = [...reviews];
+
+        // 1. Filtering
+        if (ratingFilter !== "all") {
+            const starCount = parseInt(ratingFilter);
+            result = result.filter(r => r.rating === starCount);
+        }
+
+        // 2. Sorting
+        switch (sortBy) {
+            case "oldest":
+                result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                break;
+            case "highest":
+                result.sort((a, b) => b.rating - a.rating);
+                break;
+            case "newest":
+            default:
+                result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                break;
+        }
+
+        setFilteredReviews(result);
+    }, [reviews, ratingFilter, sortBy]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -303,22 +338,65 @@ const TestimonialsPage = () => {
 
                         {/* Right - Reviews List */}
                         <div className="lg:col-span-3">
-                            <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-white font-bold text-2xl">Client Reviews</h2>
-                                <span className="text-secondary text-sm bg-white/5 px-4 py-2 rounded-full">
-                                    {reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'}
-                                </span>
-                            </div>
-
-                            {fetchLoading ? (
-                                <div className="flex flex-col items-center justify-center py-20">
-                                    <div className="w-16 h-16 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mb-4" />
-                                    <p className="text-secondary">Loading reviews...</p>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
+                                <div>
+                                    <h2 className="text-white font-bold text-3xl mb-1">Client Reviews</h2>
+                                    <p className="text-secondary text-sm">
+                                        Showing <span className="text-violet-400 font-bold">{filteredReviews.length}</span> out of {reviews.length} reviews
+                                    </p>
                                 </div>
-                            ) : reviews.length > 0 ? (
-                                <div className="grid sm:grid-cols-2 gap-6">
-                                    {reviews.map((review, index) => (
-                                        <FeedbackCard key={review.id} index={index} {...review} />
+
+                                {/* Filters & Sort Controls */}
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <div className="relative group">
+                                        <div className="absolute inset-0 bg-violet-600 rounded-xl blur-md opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                                        <div className="relative flex items-center bg-black-200/80 border border-white/10 rounded-xl p-1 backdrop-blur-md">
+                                            <div className="flex items-center pl-3 pr-2 text-secondary">
+                                                <FaFilter size={12} />
+                                            </div>
+                                            <select
+                                                value={ratingFilter}
+                                                onChange={(e) => setRatingFilter(e.target.value)}
+                                                className="bg-transparent text-white text-sm outline-none py-2 pr-3 cursor-pointer appearance-none"
+                                            >
+                                                <option value="all" className="bg-[#11071F]">All Ratings</option>
+                                                <option value="5" className="bg-[#11071F]">5 Stars Only</option>
+                                                <option value="4" className="bg-[#11071F]">4 Stars Only</option>
+                                                <option value="3" className="bg-[#11071F]">3 Stars Only</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="relative group">
+                                        <div className="absolute inset-0 bg-purple-600 rounded-xl blur-md opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                                        <div className="relative flex items-center bg-black-200/80 border border-white/10 rounded-xl p-1 backdrop-blur-md">
+                                            <div className="flex items-center pl-3 pr-2 text-secondary">
+                                                <FaSortAmountDown size={12} />
+                                            </div>
+                                            <select
+                                                value={sortBy}
+                                                onChange={(e) => setSortBy(e.target.value)}
+                                                className="bg-transparent text-white text-sm outline-none py-2 pr-3 cursor-pointer appearance-none"
+                                            >
+                                                <option value="newest" className="bg-[#11071F]">Newest First</option>
+                                                <option value="oldest" className="bg-[#11071F]">Oldest First</option>
+                                                <option value="highest" className="bg-[#11071F]">Highest Rated</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {fetchLoading ? (
+                                <div className="flex flex-col items-center justify-center py-32">
+                                    <div className="w-16 h-16 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin mb-6" />
+                                    <p className="text-secondary tracking-widest uppercase text-sm font-semibold animate-pulse">Loading amazing reviews...</p>
+                                </div>
+                            ) : filteredReviews.length > 0 ? (
+                                <div className="columns-1 sm:columns-2 gap-6 space-y-6">
+                                    {filteredReviews.map((review, index) => (
+                                        <div key={review.id} className="break-inside-avoid">
+                                            <FeedbackCard index={index} {...review} />
+                                        </div>
                                     ))}
                                 </div>
                             ) : (
