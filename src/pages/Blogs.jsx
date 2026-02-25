@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 
 import { styles } from "../styles";
+import API_BASE_URL from "../config";
+
 import { Navbar, Footer } from "../components";
 import { fadeIn, textVariant } from "../utils/motion";
 import { FaClock, FaCalendar, FaArrowRight, FaStar, FaBookOpen } from "react-icons/fa";
@@ -106,7 +108,7 @@ const Blogs = () => {
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/blogs');
+                const res = await fetch(`${API_BASE_URL}/api/blogs`);
                 if (res.ok) {
                     const data = await res.json();
                     // Filter published blogs

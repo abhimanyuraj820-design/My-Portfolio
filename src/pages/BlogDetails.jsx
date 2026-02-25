@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
 import { Navbar, Footer } from "../components";
+import API_BASE_URL from "../config";
 import { ArrowLeft, Calendar, Clock, Tag, Folder } from "lucide-react";
 
 const BlogDetails = () => {
@@ -13,7 +14,7 @@ const BlogDetails = () => {
     useEffect(() => {
         const fetchBlog = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/blogs');
+                const res = await fetch(`${API_BASE_URL}/api/blogs`);
                 if (res.ok) {
                     const blogs = await res.json();
                     const currentBlog = blogs.find(b => b.slug === slug);

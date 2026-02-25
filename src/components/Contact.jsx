@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { styles } from "../styles";
 import { EarthCanvas } from "./canvas";
 import { SectionWrapper } from "../hoc";
+import API_BASE_URL from "../config";
+
 import { slideIn } from "../utils/motion";
 
 
@@ -76,7 +78,7 @@ const Contact = () => {
 
         try {
             // 1. Save to Database (for Admin Panel)
-            const dbRes = await fetch('http://localhost:5000/api/contacts', {
+            const dbRes = await fetch(`${API_BASE_URL}/api/contacts`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/admin/Sidebar";
+import API_BASE_URL from "../../config";
+
 
 import { Check, Trash2, X, Menu, Pencil, Star } from "lucide-react";
 
@@ -22,7 +24,7 @@ const ManageTestimonials = () => {
         try {
             // Note: Since API currently serves public only (without auth), let's ensure we fetch all 
             // We'll use the headers anyway since this is admin
-            const res = await fetch('http://localhost:5000/api/testimonials', { headers: getHeaders() });
+            const res = await fetch(`${API_BASE_URL}/api/testimonials`, { headers: getHeaders() });
             if (res.ok) {
                 const data = await res.json();
                 setReviews(data);
@@ -39,7 +41,7 @@ const ManageTestimonials = () => {
 
     const handleApprove = async (id, currentStatus) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/testimonials/${id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/testimonials/${id}`, {
                 method: 'PUT',
                 headers: getHeaders(),
                 body: JSON.stringify({ isApproved: !currentStatus })
@@ -53,7 +55,7 @@ const ManageTestimonials = () => {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this review?")) {
             try {
-                const res = await fetch(`http://localhost:5000/api/testimonials/${id}`, {
+                const res = await fetch(`${API_BASE_URL}/api/testimonials/${id}`, {
                     method: 'DELETE',
                     headers: getHeaders()
                 });
@@ -80,7 +82,7 @@ const ManageTestimonials = () => {
 
     const saveEdit = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/testimonials/${editingReview}`, {
+            const res = await fetch(`${API_BASE_URL}/api/testimonials/${editingReview}`, {
                 method: 'PUT',
                 headers: getHeaders(),
                 body: JSON.stringify({

@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { FaStar } from "react-icons/fa";
 
 import { styles } from "../styles";
+import API_BASE_URL from "../config";
+
 import { SectionWrapper } from "../hoc";
 import { fadeIn, textVariant } from "../utils/motion";
 import { testimonials } from "../constants"; // Fallback data
@@ -76,7 +78,7 @@ const Feed = () => {
 
     const fetchReviews = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/testimonials');
+            const res = await fetch(`${API_BASE_URL}/api/testimonials`);
             if (res.ok) {
                 const data = await res.json();
                 const approvedReviews = data.filter(r => r.isApproved);
@@ -110,7 +112,7 @@ const Feed = () => {
         setLoading(true);
 
         try {
-            const res = await fetch('http://localhost:5000/api/testimonials', {
+            const res = await fetch(`${API_BASE_URL}/api/testimonials`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

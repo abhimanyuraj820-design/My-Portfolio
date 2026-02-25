@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, Eye, EyeOff, AlertTriangle } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import API_BASE_URL from "../../config";
+
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -30,13 +32,12 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:5000/api/auth/login", {
+            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: email.trim(), password }),
             });
 
-            const data = await res.json();
 
             if (!res.ok) {
                 setError(data.error || "Invalid credentials!");

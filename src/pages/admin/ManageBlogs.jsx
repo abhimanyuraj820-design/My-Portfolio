@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/admin/Sidebar";
+import { AuthContext } from "../../context/AuthContext";
+import API_BASE_URL from "../../config";
 import RichTextEditor from "../../components/admin/RichTextEditor";
 
 import { uploadToCloudinary } from "../../lib/cloudinary/service";
@@ -49,7 +51,7 @@ const ManageBlogs = () => {
     const fetchBlogs = async () => {
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:5000/api/blogs', { headers: getHeaders() });
+            const res = await fetch(`${API_BASE_URL}/api/blogs`, { headers: getHeaders() });
             if (res.ok) {
                 const data = await res.json();
                 setBlogs(data || []);
@@ -153,7 +155,7 @@ const ManageBlogs = () => {
         try {
             let res;
             if (editingBlog) {
-                res = await fetch(`http://localhost:5000/api/blogs/${editingBlog.id}`, {
+                res = await fetch(`${API_BASE_URL}/api/blogs/${editingBlog.id}`, {
                     method: 'PUT',
                     headers: getHeaders(),
                     body: JSON.stringify(blogData)
@@ -185,7 +187,7 @@ const ManageBlogs = () => {
         if (!window.confirm("Are you sure you want to delete this blog?")) return;
 
         try {
-            const res = await fetch(`http://localhost:5000/api/blogs/${id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/blogs/${id}`, {
                 method: 'DELETE',
                 headers: getHeaders()
             });

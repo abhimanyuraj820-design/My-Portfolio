@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/admin/Sidebar";
+import API_BASE_URL from "../../config";
+
 
 import {
     Menu, FileText, MessageSquare, Mail, Star,
@@ -38,9 +40,9 @@ const Dashboard = () => {
             const headers = { 'Authorization': `Bearer ${token}` };
 
             const [blogsRes, testimonialsRes, contactsRes] = await Promise.all([
-                fetch('http://localhost:5000/api/blogs', { headers }),
-                fetch('http://localhost:5000/api/testimonials', { headers }),
-                fetch('http://localhost:5000/api/contacts', { headers })
+                fetch(`${API_BASE_URL}/api/blogs`, { headers }),
+                fetch(`${API_BASE_URL}/api/testimonials`, { headers }),
+                fetch(`${API_BASE_URL}/api/contacts`, { headers })
             ]);
 
             const blogs = blogsRes.ok ? await blogsRes.json() : [];

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/admin/Sidebar";
+import API_BASE_URL from "../../config";
+
 
 import { Trash2, Mail, X, Menu, MessageCircle, Phone, User, Calendar, Briefcase, IndianRupee, FileText, ExternalLink } from "lucide-react";
 
@@ -19,7 +21,7 @@ const ManageContacts = () => {
 
     const fetchMessages = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/contacts', { headers: getHeaders() });
+            const res = await fetch(`${API_BASE_URL}/api/contacts`, { headers: getHeaders() });
             if (res.ok) {
                 const data = await res.json();
                 setMessages(data);
@@ -36,7 +38,7 @@ const ManageContacts = () => {
 
     const handleMarkRead = async (id, currentStatus) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/contacts/${id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/contacts/${id}`, {
                 method: 'PUT',
                 headers: getHeaders(),
                 body: JSON.stringify({ isRead: !currentStatus })
@@ -56,7 +58,7 @@ const ManageContacts = () => {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this message?")) {
             try {
-                const res = await fetch(`http://localhost:5000/api/contacts/${id}`, {
+                const res = await fetch(`${API_BASE_URL}/api/contacts/${id}`, {
                     method: 'DELETE',
                     headers: getHeaders()
                 });

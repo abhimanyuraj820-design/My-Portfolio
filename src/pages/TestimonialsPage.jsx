@@ -75,7 +75,7 @@ const TestimonialsPage = () => {
 
     const fetchReviews = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/testimonials');
+            const res = await fetch(`${API_BASE_URL}/api/testimonials`);
             if (res.ok) {
                 const data = await res.json();
                 const approvedReviews = data.filter(r => r.isApproved);
@@ -103,7 +103,7 @@ const TestimonialsPage = () => {
         setLoading(true);
 
         try {
-            const res = await fetch('http://localhost:5000/api/testimonials', {
+            const res = await fetch(`${API_BASE_URL}/api/testimonials`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
