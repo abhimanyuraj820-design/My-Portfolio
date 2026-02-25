@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { styles } from "../styles";
+import API_BASE_URL from "../config";
 
 import { FaStar, FaQuoteLeft, FaUser, FaPaperPlane } from "react-icons/fa";
 import { Navbar, Footer } from "../components";
