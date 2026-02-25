@@ -38,8 +38,8 @@ const Login = () => {
                 body: JSON.stringify({ email: email.trim(), password }),
             });
 
-
-            if (!res.ok) {
+            const data = await response.json();
+            if (!response.ok) {
                 setError(data.error || "Invalid credentials!");
             } else {
                 login(data.user, data.token);
