@@ -332,13 +332,13 @@ const ManageBlogs = () => {
                                             onClick={() => setExpandedBlog(expandedBlog === blog.id ? null : blog.id)}
                                         >
                                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                                                <div className="flex gap-3 md:gap-4">
+                                                <div className="flex gap-3 md:gap-4 min-w-0 flex-1">
                                                     {blog.cover_image && (
                                                         <img src={blog.cover_image} alt="" className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg flex-shrink-0" />
                                                     )}
-                                                    <div className="min-w-0">
+                                                    <div className="min-w-0 flex-1">
                                                         <h3 className="text-base md:text-xl font-bold flex items-center gap-2 flex-wrap">
-                                                            <span className="truncate">{blog.title}</span>
+                                                            <span className="line-clamp-2 break-words">{blog.title}</span>
                                                             {blog.featured && <Star className="text-yellow-500 flex-shrink-0" size={16} fill="currentColor" />}
                                                         </h3>
                                                         <p className="text-secondary text-xs md:text-sm mt-1">
