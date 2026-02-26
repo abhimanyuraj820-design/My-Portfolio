@@ -346,6 +346,91 @@ app.get('/api/dashboard/stats', authMiddleware, async (req, res) => {
     }
 });
 
+// --- SEO ROUTES ---
+app.get('/api/seo', async (req, res) => {
+    try {
+        const records = await prisma.sEOMetadata.findMany({
+            orderBy: { lastUpdated: 'desc' }
+        });
+        res.json(records);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/seo/:pageRoute', async (req, res) => {
+    try {
+        const { pageRoute } = req.params;
+        const record = await prisma.sEOMetadata.findUnique({
+            where: { pageRoute: decodeURIComponent(pageRoute) }
+        });
+        if (!record) return res.status(404).json({ error: 'SEO record not found' });
+        res.json(record);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/api/seo', authMiddleware, async (req, res) => {
+    try {
+        const { pageRoute, metaTitle, metaDescription, keywords, ogImage, ogType, twitterCard, canonicalUrl, author, robots, structuredData } = req.body;
+        const newRecord = await prisma.sEOMetadata.create({
+            data: {
+                pageRoute,
+                metaTitle,
+                metaDescription,
+                keywords,
+                ogImage,
+                ogType,
+                twitterCard,
+                canonicalUrl,
+                author,
+                robots,
+                structuredData
+            }
+        });
+        res.json(newRecord);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/api/seo/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { pageRoute, metaTitle, metaDescription, keywords, ogImage, ogType, twitterCard, canonicalUrl, author, robots, structuredData } = req.body;
+        const updatedRecord = await prisma.sEOMetadata.update({
+            where: { id },
+            data: {
+                pageRoute,
+                metaTitle,
+                metaDescription,
+                keywords,
+                ogImage,
+                ogType,
+                twitterCard,
+                canonicalUrl,
+                author,
+                robots,
+                structuredData
+            }
+        });
+        res.json(updatedRecord);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/seo/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        await prisma.sEOMetadata.delete({ where: { id } });
+        res.json({ message: 'SEO record deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
         console.log(`Server running on http://localhost:${PORT}`);

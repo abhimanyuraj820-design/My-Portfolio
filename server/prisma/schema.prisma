@@ -61,3 +61,19 @@ model ContactMessage {
   paymentStatus String   @default("unpaid")
   updated_at    DateTime @default(now()) @updatedAt
 }
+
+model SEOMetadata {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pageRoute       String   @unique
+  metaTitle       String
+  metaDescription String
+  keywords        String[] @default([])
+  ogImage         String?
+  ogType          String   @default("website")
+  twitterCard     String   @default("summary_large_image")
+  canonicalUrl    String?
+  author          String?
+  robots          String   @default("index, follow")
+  structuredData  Json?
+  lastUpdated     DateTime @default(now()) @updatedAt
+}

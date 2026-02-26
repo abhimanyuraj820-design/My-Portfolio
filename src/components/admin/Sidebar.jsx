@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { LayoutDashboard, FileText, MessageSquare, Mail, LogOut, X } from "lucide-react";
+import { LayoutDashboard, FileText, MessageSquare, Mail, LogOut, X, Globe } from "lucide-react";
 
 const Sidebar = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
@@ -25,6 +25,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { path: "/x7k9m2p4q/blogs", icon: FileText, label: "Blogs" },
         { path: "/x7k9m2p4q/testimonials", icon: MessageSquare, label: "Testimonials" },
         { path: "/x7k9m2p4q/contacts", icon: Mail, label: "Messages" },
+        { path: "/x7k9m2p4q/seo", icon: Globe, label: "SEO Manager" },
     ];
 
     return (

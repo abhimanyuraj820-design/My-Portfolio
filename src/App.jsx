@@ -22,6 +22,7 @@ const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
 const ManageBlogs = lazy(() => import("./pages/admin/ManageBlogs"));
 const ManageTestimonials = lazy(() => import("./pages/admin/ManageTestimonials"));
 const ManageContacts = lazy(() => import("./pages/admin/ManageContacts"));
+const SEOManager = lazy(() => import("./pages/admin/SEOManager"));
 const Blogs = lazy(() => import("./pages/Blogs"));
 const BlogDetails = lazy(() => import("./pages/BlogDetails"));
 const ProtectedRoute = lazy(() => import("./components/admin/ProtectedRoute"));
@@ -97,6 +98,7 @@ const App = () => {
                         <Route path="blogs" element={<ManageBlogs />} />
                         <Route path="testimonials" element={<ManageTestimonials />} />
                         <Route path="contacts" element={<ManageContacts />} />
+                        <Route path="seo" element={<SEOManager />} />
                       </Route>
 
                     </Routes>
