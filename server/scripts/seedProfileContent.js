@@ -37,7 +37,7 @@ const experienceSeed = [
     startDate: new Date('2025-09-01T00:00:00.000Z'),
     endDate: null,
     currentJob: true,
-    logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+    logoUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4bc.svg',
     description:
       'Designed and developed custom websites for local clients, enhancing their brand visibility.\nBuilt Android media player apps and real-time tracking systems with focus on clean, scalable code.',
     order: 0,
@@ -48,7 +48,7 @@ const experienceSeed = [
     startDate: new Date('2023-09-01T00:00:00.000Z'),
     endDate: new Date('2026-08-31T00:00:00.000Z'),
     currentJob: false,
-    logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg',
+    logoUrl: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f393.svg',
     description:
       'Pursuing Diploma in Computer Science and Engineering with coursework in Data Structures, Algorithms, DBMS and Operating Systems.',
     order: 1,
@@ -67,8 +67,8 @@ const experienceSeed = [
 ];
 
 const experienceLogoMap = {
-  'freelance web developer': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
-  'diploma in computer science & engineering': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg',
+  'freelance web developer': 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4bc.svg',
+  'diploma in computer science & engineering': 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f393.svg',
   'programming with python certification': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
 };
 
@@ -107,11 +107,9 @@ async function backfillExperienceLogos() {
 
   for (const row of rows) {
     const key = String(row.role || '').toLowerCase();
+    if (!Object.prototype.hasOwnProperty.call(experienceLogoMap, key)) continue;
     const mapped = experienceLogoMap[key];
-    if (!mapped) continue;
-
-    const hasPlaceholder = !row.logoUrl || row.logoUrl.includes('placehold.co');
-    if (!hasPlaceholder && row.logoUrl === mapped) continue;
+    if (row.logoUrl === mapped) continue;
 
     await prisma.experience.update({
       where: { id: row.id },
