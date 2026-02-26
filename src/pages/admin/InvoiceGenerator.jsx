@@ -306,14 +306,14 @@ const InvoiceForm = ({ invoice: editing, onClose, onSaved, settings }) => {
               <div>
                 <label className="label-xs">Currency</label>
                 <select value={form.currency} onChange={e => setField("currency", e.target.value)} className="form-input text-sm font-mono">
-                  {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code} ({c.symbol})</option>)}
+                  {CURRENCIES.map(c => <option key={c.code} value={c.code} className="bg-[#1a1d2e]">{c.code} ({c.symbol})</option>)}
                 </select>
               </div>
               <div>
                 <label className="label-xs">Payment Method</label>
                 <select value={form.paymentMethod} onChange={e => setField("paymentMethod", e.target.value)} className="form-input text-sm">
-                  <option value="">Select...</option>
-                  {PAYMENT_METHODS.map(m => <option key={m} value={m}>{m}</option>)}
+                  <option value="" className="bg-[#1a1d2e]">Select...</option>
+                  {PAYMENT_METHODS.map(m => <option key={m} value={m} className="bg-[#1a1d2e]">{m}</option>)}
                 </select>
               </div>
             </div>

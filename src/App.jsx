@@ -25,6 +25,7 @@ const ManageTestimonials = lazy(() => import("./pages/admin/ManageTestimonials")
 const ManageContacts = lazy(() => import("./pages/admin/ManageContacts"));
 const SEOManager = lazy(() => import("./pages/admin/SEOManager"));
 const ProjectDashboard = lazy(() => import("./pages/admin/ProjectDashboard"));
+const ExperienceDashboard = lazy(() => import("./pages/admin/ExperienceDashboard"));
 const TechStackDashboard = lazy(() => import("./pages/admin/TechStackDashboard"));
 const SettingsDashboard = lazy(() => import("./pages/admin/SettingsDashboard"));
 const AnalyticsHub = lazy(() => import("./pages/admin/AnalyticsHub"));
@@ -125,6 +126,7 @@ const App = () => {
                           <Route index element={<Dashboard />} />
                           <Route path="dashboard" element={<Dashboard />} />
                           <Route path="projects" element={<ProjectDashboard />} />
+                          <Route path="experience" element={<ExperienceDashboard />} />
                           <Route path="skills" element={<TechStackDashboard />} />
                           <Route path="blogs" element={<ManageBlogs />} />
                           <Route path="testimonials" element={<ManageTestimonials />} />

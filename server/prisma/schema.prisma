@@ -128,10 +128,25 @@ model Invoice {
 model Skill {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String
-  iconName    String
-  category    String   // e.g., "Frontend", "Backend", "Tools", "Language"
+  iconUrl     String?
+  category    String   // e.g., "Frontend", "Backend", "Tools"
   proficiency Int      @default(0) // 0-100
+  color       String?  // Custom glow color
   isFeatured  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Experience {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  company     String
+  role        String
+  startDate   DateTime
+  endDate     DateTime?
+  description String
+  logoUrl     String?
+  currentJob  Boolean  @default(false)
+  order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Sidebar from "../../components/admin/Sidebar";
+import { m as motion, AnimatePresence } from "framer-motion";
 import API_BASE_URL from "../../config";
 import {
   Menu, Plus, Pencil, Trash2, X, Check, Package,
@@ -63,61 +64,76 @@ const ServiceCard = ({ service, onEdit, onDelete }) => {
   };
 
   return (
-    <div className="relative group flex flex-col rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-transparent backdrop-blur-sm p-6 hover:border-violet-500/40 hover:shadow-[0_0_30px_rgba(139,92,246,0.08)] transition-all duration-300">
-      {/* Glow accent */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ y: -5 }}
+      className="relative group flex flex-col rounded-[2rem] border border-white/5 bg-white/[0.02] backdrop-blur-xl p-8 hover:border-violet-500/30 hover:bg-white/[0.05] transition-all duration-500 shadow-xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
+    >
+      {/* Premium Backdrop Glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 via-transparent to-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[2rem]" />
 
       {/* Icon + Actions */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-violet-500/15 border border-violet-500/20 text-violet-400">
-          <ServiceIcon name={service.icon} size={20} />
+      <div className="flex items-start justify-between mb-8 relative z-10">
+        <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-violet-500/10 border border-violet-500/20 text-violet-400 group-hover:scale-110 group-hover:bg-violet-500 group-hover:text-white transition-all duration-500 shadow-lg">
+          <ServiceIcon name={service.icon} size={24} />
         </div>
-        <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
           <button
             onClick={() => onEdit(service)}
-            className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all"
+            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all"
           >
-            <Pencil size={14} />
+            <Pencil size={16} />
           </button>
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="p-1.5 rounded-lg text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all"
+            className="w-10 h-10 rounded-xl bg-red-500/5 border border-red-500/10 text-red-400/50 hover:text-white hover:bg-red-500 flex items-center justify-center transition-all"
           >
-            {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+            {deleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
           </button>
         </div>
       </div>
 
       {/* Title + Description */}
-      <h3 className="text-white font-bold text-lg mb-1.5">{service.title}</h3>
-      <p className="text-white/50 text-sm leading-relaxed mb-5 flex-1">{service.description}</p>
+      <div className="space-y-3 mb-8 relative z-10">
+        <h3 className="text-white font-black text-2xl tracking-tight leading-none group-hover:text-violet-400 transition-colors duration-300">{service.title}</h3>
+        <p className="text-white/40 text-sm leading-relaxed line-clamp-3 font-medium">{service.description}</p>
+      </div>
 
       {/* Features */}
       {service.features?.length > 0 && (
-        <ul className="space-y-2 mb-5">
-          {service.features.filter(Boolean).map((f, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-white/70">
-              <Check size={13} className="text-violet-400 mt-0.5 shrink-0" />
-              <span>{f}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="space-y-4 mb-8 relative z-10">
+          <div className="h-px bg-gradient-to-r from-white/10 to-transparent" />
+          <ul className="grid grid-cols-1 gap-3">
+            {service.features.filter(Boolean).slice(0, 4).map((f, i) => (
+              <li key={i} className="flex items-center gap-3 text-xs font-bold text-white/60 group-hover:text-white/80 transition-colors uppercase tracking-widest">
+                <div className="w-1.5 h-1.5 rounded-full bg-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.5)]" />
+                <span className="truncate">{f}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {/* Footer */}
-      <div className="border-t border-white/8 pt-4 flex items-center justify-between mt-auto">
-        <div>
-          <span className="font-mono text-2xl font-bold text-white">
-            ₹{Number(service.price).toLocaleString("en-IN")}
-          </span>
+      <div className="pt-6 border-t border-white/5 flex items-end justify-between mt-auto relative z-10">
+        <div className="space-y-1">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Investment</p>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl md:text-3xl font-black text-white tracking-tighter">
+              ₹{Number(service.price).toLocaleString("en-IN")}
+            </span>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5 text-white/40 text-xs">
-          <Clock size={12} />
+        <div className="flex items-center gap-1.5 text-white/40 text-[10px] font-black uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+          <Clock size={12} className="text-violet-400" />
           <span>{service.deliveryTime}</span>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -315,8 +331,8 @@ const ServiceModal = ({ service, onClose, onSaved }) => {
                 onChange={(e) => setField("status", e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none text-white text-sm transition-colors"
               >
-                <option value="Active">✅ Active (show on website)</option>
-                <option value="Inactive">🔴 Inactive (hidden)</option>
+                <option value="Active" className="bg-[#1a1d2e]">✅ Active (show on website)</option>
+                <option value="Inactive" className="bg-[#1a1d2e]">🔴 Inactive (hidden)</option>
               </select>
             </div>
             <div>
@@ -491,25 +507,33 @@ const ServicesManager = () => {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {services.map((svc) => (
-                <ServiceCard
-                  key={svc.id}
-                  service={svc}
-                  onEdit={(s) => setModal({ service: s })}
-                  onDelete={fetchServices}
-                />
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+              <AnimatePresence mode="popLayout">
+                {services.map((svc) => (
+                  <ServiceCard
+                    key={svc.id}
+                    service={svc}
+                    onEdit={(s) => setModal({ service: s })}
+                    onDelete={fetchServices}
+                  />
+                ))}
+              </AnimatePresence>
               {/* Add New Card */}
-              <button
+              <motion.button
+                layout
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setModal({ service: null })}
-                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/15 hover:border-violet-500/40 hover:bg-violet-500/5 text-white/30 hover:text-violet-400 transition-all min-h-[200px] group"
+                className="flex flex-col items-center justify-center gap-4 rounded-[2rem] border-2 border-dashed border-white/5 hover:border-violet-500/20 hover:bg-violet-500/5 text-white/20 hover:text-violet-400 transition-all min-h-[300px] group shadow-inner"
               >
-                <div className="w-10 h-10 rounded-full border border-current flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Plus size={18} />
+                <div className="w-16 h-16 rounded-full border-2 border-current flex items-center justify-center group-hover:scale-110 transition-all duration-500">
+                  <Plus size={32} />
                 </div>
-                <span className="text-sm font-medium">Add New Service</span>
-              </button>
+                <div className="text-center">
+                  <span className="block text-sm font-black uppercase tracking-widest">Expansion Required</span>
+                  <span className="text-[10px] text-white/20 uppercase tracking-tighter">Add New Service tier</span>
+                </div>
+              </motion.button>
             </div>
           )}
         </div>

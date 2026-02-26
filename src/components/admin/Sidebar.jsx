@@ -130,6 +130,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { path: "/x7k9m2p4q/analytics", icon: Activity, label: "Analytics" },
         { path: "/x7k9m2p4q/subscribers", icon: Users, label: "Audience" },
         { path: "/x7k9m2p4q/projects", icon: FileText, label: "Projects" },
+        { path: "/x7k9m2p4q/experience", icon: Activity, label: "Experience" },
         { path: "/x7k9m2p4q/skills", icon: Globe, label: "Tech Stack" },
         { path: "/x7k9m2p4q/blogs", icon: FileText, label: "Blogs" },
         { path: "/x7k9m2p4q/testimonials", icon: MessageSquare, label: "Testimonials" },

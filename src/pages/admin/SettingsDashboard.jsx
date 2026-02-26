@@ -332,14 +332,14 @@ const SettingsDashboard = () => {
                                             onChange={(e) => updateSocialInput(item.id, 'platform', e.target.value)}
                                             className="w-1/3 md:w-1/4 px-4 py-3 bg-black/30 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#915EFF] transition-colors appearance-none"
                                         >
-                                            <option value="github">GitHub</option>
-                                            <option value="linkedin">LinkedIn</option>
-                                            <option value="twitter">X (Twitter)</option>
-                                            <option value="instagram">Instagram</option>
-                                            <option value="youtube">YouTube</option>
-                                            <option value="dribbble">Dribbble</option>
-                                            <option value="behance">Behance</option>
-                                            <option value="website">Personal Website</option>
+                                            <option value="github" className="bg-[#1a1d2e]">GitHub</option>
+                                            <option value="linkedin" className="bg-[#1a1d2e]">LinkedIn</option>
+                                            <option value="twitter" className="bg-[#1a1d2e]">X (Twitter)</option>
+                                            <option value="instagram" className="bg-[#1a1d2e]">Instagram</option>
+                                            <option value="youtube" className="bg-[#1a1d2e]">YouTube</option>
+                                            <option value="dribbble" className="bg-[#1a1d2e]">Dribbble</option>
+                                            <option value="behance" className="bg-[#1a1d2e]">Behance</option>
+                                            <option value="website" className="bg-[#1a1d2e]">Personal Website</option>
                                         </select>
                                         <input
                                             type="url"

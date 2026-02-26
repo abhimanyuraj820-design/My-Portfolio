@@ -14,9 +14,10 @@ const CATEGORY_ICONS = {
 
 const initialForm = {
     name: '',
-    iconName: '',
+    iconUrl: '',
     category: CATEGORIES[0],
     proficiency: 50,
+    color: '#6366f1', // Default indigo
     isFeatured: false,
 };
 
@@ -54,13 +55,13 @@ const TechModal = ({ isOpen, onClose, onSave, skill = null }) => {
         const file = files[0];
         const reader = new FileReader();
         reader.onloadend = () => {
-            setFormData(prev => ({ ...prev, iconName: reader.result })); // Base64 string
+            setFormData(prev => ({ ...prev, iconUrl: reader.result })); // Base64 string
         };
         reader.readAsDataURL(file);
     }, []);
 
     const removeIcon = () => {
-        setFormData(prev => ({ ...prev, iconName: '' }));
+        setFormData(prev => ({ ...prev, iconUrl: '' }));
     };
 
     const handleSubmit = (e) => {
@@ -121,14 +122,14 @@ const TechModal = ({ isOpen, onClose, onSave, skill = null }) => {
                                 <div className="space-y-3">
                                     <label className="text-sm font-medium text-white/80 flex justify-between items-center">
                                         <span>Icon Image (Square)</span>
-                                        {formData.iconName?.startsWith('data:image') || formData.iconName?.startsWith('http') || formData.iconName ? (
+                                        {formData.iconUrl?.startsWith('data:image') || formData.iconUrl?.startsWith('http') || formData.iconUrl ? (
                                             <button type="button" onClick={removeIcon} className="text-xs text-red-400 hover:text-red-300">Remove</button>
                                         ) : null}
                                     </label>
 
-                                    {(formData.iconName?.startsWith('data:image') || formData.iconName?.startsWith('http') || formData.iconName) && (formData.iconName.length > 50 || formData.iconName.includes('/')) ? (
+                                    {(formData.iconUrl?.startsWith('data:image') || formData.iconUrl?.startsWith('http') || formData.iconUrl) && (formData.iconUrl.length > 50 || formData.iconUrl.includes('/')) ? (
                                         <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-white/10 group bg-white/5 flex items-center justify-center p-2">
-                                            <img src={formData.iconName} alt="Icon Preview" className="w-full h-full object-contain" />
+                                            <img src={formData.iconUrl} alt="Icon Preview" className="w-full h-full object-contain" />
                                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                 <span className="text-white text-xs text-center leading-tight">Uploaded</span>
                                             </div>
@@ -193,6 +194,20 @@ const TechModal = ({ isOpen, onClose, onSave, skill = null }) => {
                                 <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-widest font-semibold">
                                     <span>Beginner</span>
                                     <span>Master</span>
+                                </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-medium text-white/80">Glow Color</label>
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="color"
+                                        name="color"
+                                        value={formData.color || '#6366f1'}
+                                        onChange={handleChange}
+                                        className="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0"
+                                    />
+                                    <span className="text-white/60 text-sm font-mono">{formData.color || '#6366f1'}</span>
                                 </div>
                             </div>
 

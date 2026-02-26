@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { m as motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Briefcase, GraduationCap, Award, Code2 } from "lucide-react";
 
 import { styles } from "../styles";
-import { experiences } from "../constants";
 import { SectionWrapper } from "../hoc";
 import { textVariant } from "../utils/motion";
+import API_BASE_URL from "../config";
 
 // Map each experience to a Lucide icon by index (since asset icons may be small SVGs)
 const ICONS = [Briefcase, GraduationCap, Award, Code2];
@@ -29,6 +29,14 @@ const ExperienceCard = ({ experience, index }) => {
     const IconComponent = ICONS[index % ICONS.length];
     const gradient = ICON_GRADIENTS[index % ICON_GRADIENTS.length];
     const glow = CARD_GLOW[index % CARD_GLOW.length];
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    };
+
+    const dateRange = `${formatDate(experience.startDate)} - ${experience.currentJob ? 'Present' : formatDate(experience.endDate)}`;
 
     return (
         <motion.div
@@ -53,8 +61,12 @@ const ExperienceCard = ({ experience, index }) => {
                     <div className={`flex-shrink-0 relative`}>
                         {/* Glow ring */}
                         <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${gradient} blur-md opacity-50 group-hover:opacity-80 transition-opacity duration-300`} />
-                        <div className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-2xl`}>
-                            <IconComponent size={22} className="text-white/90" />
+                        <div className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-2xl overflow-hidden p-2`}>
+                            {experience.logoUrl ? (
+                                <img src={experience.logoUrl} alt={experience.company} className="w-full h-full object-contain filter drop-shadow-md" />
+                            ) : (
+                                <IconComponent size={22} className="text-white/90" />
+                            )}
                         </div>
                     </div>
 
@@ -64,10 +76,10 @@ const ExperienceCard = ({ experience, index }) => {
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                             <div className="min-w-0">
                                 <h3 className="text-white font-bold text-[16px] sm:text-[19px] leading-tight truncate">
-                                    {experience.title}
+                                    {experience.role}
                                 </h3>
                                 <p className={`bg-gradient-to-r ${gradient} bg-clip-text text-transparent text-[13px] sm:text-[14px] font-semibold mt-1`}>
-                                    {experience.company_name}
+                                    {experience.company}
                                 </p>
                             </div>
 
@@ -79,28 +91,17 @@ const ExperienceCard = ({ experience, index }) => {
                                 className="inline-flex items-center flex-shrink-0 self-start sm:self-auto gap-1.5 bg-white/[0.06] text-white/60 text-[11px] font-medium px-3 py-1.5 rounded-full border border-white/10 whitespace-nowrap"
                             >
                                 <span className="text-[10px]">📅</span>
-                                {experience.date}
+                                {dateRange}
                             </motion.span>
                         </div>
 
                         {/* Thin separator */}
                         <div className={`w-0 group-hover:w-full h-[1px] bg-gradient-to-r ${glow} mt-3 mb-4 transition-all duration-500 ease-out`} />
 
-                        {/* Bullet points */}
-                        <ul className="flex flex-col gap-2">
-                            {experience.points.map((point, i) => (
-                                <motion.li
-                                    key={`point-${i}`}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                                    transition={{ delay: index * 0.15 + 0.2 + i * 0.07 }}
-                                    className="flex items-start gap-2.5 text-[12.5px] sm:text-[13.5px] text-white/65 leading-relaxed"
-                                >
-                                    <span className={`mt-[5px] flex-shrink-0 w-1.5 h-1.5 rounded-full bg-gradient-to-r ${gradient}`} />
-                                    {point}
-                                </motion.li>
-                            ))}
-                        </ul>
+                        {/* Description */}
+                        <div className="text-[13px] sm:text-[14px] text-white/70 leading-relaxed whitespace-pre-line">
+                            {experience.description}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -109,6 +110,34 @@ const ExperienceCard = ({ experience, index }) => {
 };
 
 const Experience = () => {
+    const [experiences, setExperiences] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchExperiences = async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/experience`);
+                if (!res.ok) throw new Error('Failed to fetch experiences');
+                const data = await res.json();
+                setExperiences(data);
+            } catch (error) {
+                console.error('Error fetching experiences:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchExperiences();
+    }, []);
+
+    if (isLoading) {
+        return null; // Or a loading spinner
+    }
+
+    if (experiences.length === 0) {
+        return null; // Don't render section if no experiences
+    }
+
     return (
         <>
             <motion.div variants={textVariant()}>

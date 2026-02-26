@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Sidebar from "../../components/admin/Sidebar";
+import { m as motion, AnimatePresence } from "framer-motion";
 import API_BASE_URL from "../../config";
 
 import { Check, Trash2, X, Menu, Pencil, Star, Search, ArrowUpDown, ChevronDown } from "lucide-react";
@@ -231,53 +232,75 @@ const ManageTestimonials = () => {
                     ) : filteredReviews.length === 0 ? (
                         <p className="text-secondary text-center mt-10">{tSearch || tFilter !== 'all' ? 'No matching reviews found' : 'No reviews found.'}</p>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {filteredReviews.map((review) => (
-                                <div
-                                    key={review.id}
-                                    className="bg-[#1a1d2e] rounded-2xl p-4 md:p-5 flex flex-col border border-[#252836] hover:border-[#353849] transition-all"
-                                >
-                                    {/* Header */}
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div>
-                                            <h3 className="font-bold text-base md:text-lg">{review.name}</h3>
-                                            {renderStars(review.rating)}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <AnimatePresence mode="popLayout">
+                                {filteredReviews.map((review, index) => (
+                                    <motion.div
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                                        key={review.id}
+                                        className="group relative bg-white/[0.03] rounded-[2rem] p-6 md:p-8 flex flex-col border border-white/5 hover:border-white/20 transition-all duration-500 backdrop-blur-xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
+                                    >
+                                        {/* Premium Backdrop Glow */}
+                                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[2rem]" />
+
+                                        {/* Header */}
+                                        <div className="flex justify-between items-start mb-6 relative z-10">
+                                            <div className="space-y-1">
+                                                <h3 className="font-black text-lg md:text-xl text-white tracking-tight leading-none">{review.name}</h3>
+                                                <div className="flex items-center gap-2">
+                                                    {renderStars(review.rating)}
+                                                </div>
+                                            </div>
+                                            <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all duration-300 ${review.isApproved
+                                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 group-hover:bg-emerald-500/20'
+                                                : 'bg-amber-500/10 text-amber-400 border-amber-500/20 group-hover:bg-amber-500/20'}`}>
+                                                {review.isApproved ? "Approved" : "Pending"}
+                                            </div>
                                         </div>
-                                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${review.isApproved ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' : 'bg-amber-500/10 text-amber-300 border-amber-500/20'}`}>
-                                            {review.isApproved ? "Approved" : "Pending"}
-                                        </span>
-                                    </div>
 
-                                    {/* Message */}
-                                    <p className="text-secondary text-sm flex-1 mb-4 line-clamp-4">
-                                        "{review.message}"
-                                    </p>
+                                        {/* Message */}
+                                        <div className="relative mb-8 flex-1 group-hover:translate-x-1 transition-transform duration-300">
+                                            <div className="absolute -left-4 -top-2 text-4xl text-white/5 font-serif italic selection:bg-transparent">“</div>
+                                            <p className="text-white/60 text-sm md:text-base leading-relaxed italic relative z-10">
+                                                {review.message}
+                                            </p>
+                                        </div>
 
-                                    {/* Actions */}
-                                    <div className="flex gap-2 mt-auto">
-                                        <button
-                                            onClick={() => startEdit(review)}
-                                            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 py-2.5 px-3 rounded-xl transition-all text-sm font-bold shadow-md shadow-purple-500/20 text-white"
-                                        >
-                                            <Pencil size={14} /> Edit
-                                        </button>
-                                        <button
-                                            onClick={() => handleApprove(review.id, review.isApproved)}
-                                            className={`p-2.5 rounded-xl transition-all font-bold shadow-md ${review.isApproved ? 'bg-gradient-to-r from-amber-500 to-orange-500 shadow-amber-500/20 text-white' : 'bg-gradient-to-r from-emerald-500 to-green-600 shadow-emerald-500/20 text-white'}`}
-                                            title={review.isApproved ? "Unapprove" : "Approve"}
-                                        >
-                                            <Check size={16} />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(review.id)}
-                                            className="p-2.5 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl shadow-md shadow-red-500/20 text-white transition-all"
-                                            title="Delete"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                                        {/* Actions */}
+                                        <div className="flex gap-2 relative z-10 pt-4 border-t border-white/5">
+                                            <button
+                                                onClick={() => startEdit(review)}
+                                                className="flex-1 flex items-center justify-center gap-2 bg-white text-black hover:bg-white/90 py-3 px-4 rounded-2xl transition-all font-black text-xs uppercase tracking-wider"
+                                            >
+                                                <Pencil size={14} /> Edit
+                                            </button>
+
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => handleApprove(review.id, review.isApproved)}
+                                                    className={`p-3 rounded-2xl transition-all border ${review.isApproved
+                                                        ? 'bg-amber-500/10 border-amber-500/20 text-amber-500 hover:bg-amber-500/20'
+                                                        : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/20'}`}
+                                                    title={review.isApproved ? "Unapprove" : "Approve"}
+                                                >
+                                                    <Check size={18} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(review.id)}
+                                                    className="p-3 bg-red-500/10 border border-red-500/20 hover:bg-red-500 hover:border-red-500 text-red-500 hover:text-white rounded-2xl transition-all"
+                                                    title="Delete"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
                         </div>
                     )}
                 </div>

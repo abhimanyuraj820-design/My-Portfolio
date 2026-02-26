@@ -3,6 +3,7 @@ import { m as motion, AnimatePresence } from "framer-motion";
 import { SectionWrapper } from "../hoc";
 import { Loader2, Code2, Globe, Cpu, Wrench } from "lucide-react";
 import { styles } from "../styles";
+import API_BASE_URL from "../config";
 
 /**
  * Ultra-Premium Futuristic Styling Configurations
@@ -29,8 +30,8 @@ const TechCard = ({ skill, index }) => {
     const [imageError, setImageError] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
 
-    // Validate if the iconName is a valid URL or Base64. Fix Three.js specifically if it's the broken devicon link.
-    let iconSrc = skill.iconName;
+    // Validate if the iconUrl is a valid URL or Base64. Fix Three.js specifically if it's the broken devicon link.
+    let iconSrc = skill.iconUrl;
     if (skill.name.toLowerCase().includes("three")) {
         // The official devicon for threejs often fails loading in some contexts; substitute with a reliable SVG
         iconSrc = "https://raw.githubusercontent.com/mrdoob/three.js/master/files/favicon.ico";
@@ -73,7 +74,8 @@ const TechCard = ({ skill, index }) => {
             >
                 {/* 1. Ambient Back Glow (Intensifies on hover) */}
                 <div
-                    className={`absolute inset-0 rounded-3xl bg-gradient-to-tr ${glowGradient} opacity-0 group-hover:opacity-15 blur-xl transition-opacity duration-500`}
+                    className={`absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-15 blur-xl transition-opacity duration-500`}
+                    style={{ background: skill.color ? `linear-gradient(to top right, ${skill.color}, transparent)` : `linear-gradient(to top right, var(--tw-gradient-stops))` }}
                 />
 
                 {/* 2. Glass Edge Highlight (Top left) */}
@@ -84,14 +86,14 @@ const TechCard = ({ skill, index }) => {
                     <rect
                         x="1" y="1" width="100%" height="100%" rx="24" ry="24"
                         fill="none"
-                        stroke="url(#glowGradient)"
+                        stroke={`url(#glowGradient-${skill.id})`}
                         strokeWidth="2"
                         strokeDasharray="100 600"
                         className="animate-[dash_3s_linear_infinite]"
                     />
                     <defs>
-                        <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="rgba(255,255,255,0.8)" />
+                        <linearGradient id={`glowGradient-${skill.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor={skill.color || "rgba(255,255,255,0.8)"} />
                             <stop offset="100%" stopColor="rgba(255,255,255,0)" />
                         </linearGradient>
                     </defs>
@@ -103,7 +105,10 @@ const TechCard = ({ skill, index }) => {
                     style={{ transform: isHovered ? 'translateZ(30px)' : 'translateZ(0px)' }}
                 >
                     {/* Pulsing Aura Behind Icon */}
-                    <div className={`absolute inset-0 bg-gradient-to-tr ${glowGradient} rounded-full blur-xl opacity-0 group-hover:opacity-40 animate-pulse transition-opacity duration-500`} />
+                    <div 
+                        className={`absolute inset-0 rounded-full blur-xl opacity-0 group-hover:opacity-40 animate-pulse transition-opacity duration-500`} 
+                        style={{ background: skill.color ? `linear-gradient(to top right, ${skill.color}, transparent)` : `linear-gradient(to top right, var(--tw-gradient-stops))` }}
+                    />
 
                     {hasValidImageSource && !imageError ? (
                         <img
@@ -116,6 +121,7 @@ const TechCard = ({ skill, index }) => {
                         <FallbackIcon
                             size={40}
                             className="text-white/30 group-hover:text-white filter group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] transition-all duration-300"
+                            style={{ color: isHovered && skill.color ? skill.color : undefined }}
                         />
                     )}
                 </div>
@@ -133,7 +139,10 @@ const TechCard = ({ skill, index }) => {
                                 exit={{ opacity: 0, y: 5, scale: 0.9 }}
                                 className="absolute -top-6 bg-black/80 border border-white/20 backdrop-blur-md px-3 py-1 rounded-full whitespace-nowrap"
                             >
-                                <span className={`text-[9px] uppercase tracking-[0.3em] bg-clip-text text-transparent bg-gradient-to-r ${glowGradient} font-bold`}>
+                                <span 
+                                    className={`text-[9px] uppercase tracking-[0.3em] bg-clip-text text-transparent font-bold`}
+                                    style={{ backgroundImage: skill.color ? `linear-gradient(to right, ${skill.color}, #ffffff)` : `linear-gradient(to right, var(--tw-gradient-stops))` }}
+                                >
                                     {skill.category}
                                 </span>
                             </motion.div>
@@ -145,7 +154,13 @@ const TechCard = ({ skill, index }) => {
                     </span>
 
                     {/* Glowing dot indicator */}
-                    <div className={`w-1.5 h-1.5 rounded-full mt-2 bg-gradient-to-r ${glowGradient} opacity-30 group-hover:opacity-100 group-hover:shadow-[0_0_10px_rgba(255,255,255,0.8)] transition-all duration-500`} />
+                    <div 
+                        className={`w-1.5 h-1.5 rounded-full mt-2 opacity-30 group-hover:opacity-100 transition-all duration-500`} 
+                        style={{ 
+                            background: skill.color || 'white',
+                            boxShadow: isHovered && skill.color ? `0 0 10px ${skill.color}` : 'none'
+                        }}
+                    />
                 </div>
             </motion.div>
         </motion.div>
@@ -168,7 +183,7 @@ const Tech = () => {
     useEffect(() => {
         const fetchSkills = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/skills");
+                const res = await fetch(`${API_BASE_URL}/api/skills`);
                 if (res.ok) {
                     const data = await res.json();
                     setSkills(data);

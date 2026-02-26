@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { m as motion } from 'framer-motion';
 import TechModal from '../../components/admin/TechModal';
 import Sidebar from '../../components/admin/Sidebar';
+import API_BASE_URL from '../../config';
 
 const CATEGORIES = ['All', 'Frontend', 'Backend', 'Tools', 'Language', 'Other'];
 
@@ -33,7 +34,7 @@ const TechStackDashboard = () => {
         try {
             setIsLoading(true);
             const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:5000/api/skills', {
+            const res = await fetch(`${API_BASE_URL}/api/skills`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!res.ok) throw new Error('Failed to fetch skills');
@@ -86,7 +87,7 @@ const TechStackDashboard = () => {
         if (window.confirm('Are you sure you want to delete this skill?')) {
             try {
                 const token = localStorage.getItem('token');
-                const res = await fetch(`http://localhost:5000/api/skills/${id}`, {
+                const res = await fetch(`${API_BASE_URL}/api/skills/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -104,8 +105,8 @@ const TechStackDashboard = () => {
         try {
             const token = localStorage.getItem('token');
             const url = editingSkill
-                ? `http://localhost:5000/api/skills/${editingSkill.id}`
-                : 'http://localhost:5000/api/skills';
+                ? `${API_BASE_URL}/api/skills/${editingSkill.id}`
+                : `${API_BASE_URL}/api/skills`;
 
             const method = editingSkill ? 'PUT' : 'POST';
 
@@ -250,10 +251,16 @@ const TechStackDashboard = () => {
                                             </button>
 
                                             <div className="flex flex-col items-center text-center gap-3">
-                                                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-cyan-500/30 group-hover:bg-cyan-500/10 transition-colors shadow-inner overflow-hidden p-2">
-                                                    {skill.iconName && (skill.iconName.startsWith('http') || skill.iconName.startsWith('data:image') || skill.iconName.startsWith('/')) ? (
+                                                <div 
+                                                    className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-colors shadow-inner overflow-hidden p-2"
+                                                    style={{ 
+                                                        borderColor: skill.color ? `${skill.color}40` : 'rgba(255,255,255,0.1)',
+                                                        boxShadow: skill.color ? `inset 0 0 20px ${skill.color}20` : 'none'
+                                                    }}
+                                                >
+                                                    {skill.iconUrl && (skill.iconUrl.startsWith('http') || skill.iconUrl.startsWith('data:image') || skill.iconUrl.startsWith('/')) ? (
                                                         <img
-                                                            src={skill.iconName}
+                                                            src={skill.iconUrl}
                                                             alt={skill.name}
                                                             className="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]"
                                                             onError={(e) => {
@@ -263,7 +270,7 @@ const TechStackDashboard = () => {
                                                             }}
                                                         />
                                                     ) : (
-                                                        <IconComponent size={28} className="text-white/70 group-hover:text-cyan-400 transition-colors" />
+                                                        <IconComponent size={28} style={{ color: skill.color || 'rgba(255,255,255,0.7)' }} />
                                                     )}
                                                 </div>
 
@@ -275,12 +282,16 @@ const TechStackDashboard = () => {
                                                 <div className="w-full mt-2">
                                                     <div className="flex justify-between text-[10px] text-white/50 mb-1">
                                                         <span>Level</span>
-                                                        <span className="text-cyan-400 font-bold">{skill.proficiency}%</span>
+                                                        <span style={{ color: skill.color || '#22d3ee' }} className="font-bold">{skill.proficiency}%</span>
                                                     </div>
                                                     <div className="w-full h-1.5 bg-black/50 rounded-full overflow-hidden border border-white/5">
                                                         <div
-                                                            className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full"
-                                                            style={{ width: `${skill.proficiency}%` }}
+                                                            className="h-full rounded-full"
+                                                            style={{ 
+                                                                width: `${skill.proficiency}%`,
+                                                                backgroundColor: skill.color || '#22d3ee',
+                                                                boxShadow: skill.color ? `0 0 10px ${skill.color}` : 'none'
+                                                            }}
                                                         />
                                                     </div>
                                                 </div>

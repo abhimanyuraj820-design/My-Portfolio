@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Sidebar from "../../components/admin/Sidebar";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../../context/AuthContext";
 import API_BASE_URL from "../../config";
 import RichTextEditor from "../../components/admin/RichTextEditor";
 
 import { uploadToCloudinary } from "../../lib/cloudinary/service";
-import { Pencil, Trash2, Eye, EyeOff, Star, Plus, X, ChevronDown, ChevronUp, Menu, ArrowLeft, Search, ArrowUpDown } from "lucide-react";
+import { Pencil, Trash2, Eye, EyeOff, Star, Plus, X, ChevronDown, ChevronUp, Menu, ArrowLeft, Search, ArrowUpDown, RefreshCw, Globe } from "lucide-react";
 
 const ManageBlogs = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -376,90 +377,166 @@ const ManageBlogs = () => {
                                     {blogFilter === 'all' && !blogSearch && <button onClick={handleCreateNew} className="bg-violet-600 hover:bg-violet-700 py-3 px-6 rounded-lg font-bold">Create Your First Blog</button>}
                                 </div>
                             ) : (
-                                filteredBlogs.map((blog) => (
-                                    <div key={blog.id} className="bg-black-100 rounded-2xl overflow-hidden">
-                                        {/* Blog Header */}
-                                        <div
-                                            className="p-4 md:p-6 cursor-pointer hover:bg-black-200 transition-colors"
-                                            onClick={() => setExpandedBlog(expandedBlog === blog.id ? null : blog.id)}
-                                        >
-                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                                                <div className="flex gap-3 md:gap-4 min-w-0 flex-1">
-                                                    {blog.cover_image && (
-                                                        <img src={blog.cover_image} alt="" className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg flex-shrink-0" />
-                                                    )}
-                                                    <div className="min-w-0 flex-1">
-                                                        <h3 className="text-base md:text-xl font-bold flex items-center gap-2 flex-wrap">
-                                                            <span className="line-clamp-2 break-words">{blog.title}</span>
-                                                            {blog.featured && <Star className="text-yellow-500 flex-shrink-0" size={16} fill="currentColor" />}
-                                                        </h3>
-                                                        <p className="text-secondary text-xs md:text-sm mt-1">
-                                                            {blog.category && <span className="bg-violet-500/20 text-violet-400 px-2 py-0.5 rounded mr-2">{blog.category}</span>}
-                                                            {formatDate(blog.created_at)} • {blog.reading_time || 5} min
-                                                        </p>
-                                                        {blog.tags?.length > 0 && (
-                                                            <div className="hidden md:flex gap-1 mt-2 flex-wrap">
-                                                                {blog.tags.map((tag, i) => (
-                                                                    <span key={i} className="bg-tertiary text-xs px-2 py-1 rounded">{tag}</span>
-                                                                ))}
+                                <div className="space-y-6">
+                                    <AnimatePresence mode="popLayout">
+                                        {filteredBlogs.map((blog, index) => (
+                                            <motion.div
+                                                layout
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, scale: 0.95 }}
+                                                transition={{ duration: 0.4, delay: index * 0.05 }}
+                                                key={blog.id}
+                                                className={`group relative rounded-3xl overflow-hidden transition-all duration-500 border backdrop-blur-xl ${expandedBlog === blog.id
+                                                    ? 'bg-white/[0.04] border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/10'
+                                                    : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/10 shadow-lg'
+                                                    }`}
+                                            >
+                                                {/* Premium Glow Effect for Selected */}
+                                                {expandedBlog === blog.id && (
+                                                    <div className="absolute inset-0 bg-gradient-to-br from-violet-600/10 via-transparent to-pink-600/10 pointer-events-none" />
+                                                )}
+
+                                                {/* Blog Header */}
+                                                <div
+                                                    className="relative p-5 md:p-8 cursor-pointer select-none"
+                                                    onClick={() => setExpandedBlog(expandedBlog === blog.id ? null : blog.id)}
+                                                >
+                                                    <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+                                                        {/* Cover Image with Glass Frame */}
+                                                        {blog.cover_image && (
+                                                            <div className="relative shrink-0 group-hover:scale-105 transition-transform duration-500">
+                                                                <img
+                                                                    src={blog.cover_image}
+                                                                    alt=""
+                                                                    className="w-20 h-20 md:w-28 md:h-28 object-cover rounded-2xl shadow-2xl border border-white/10"
+                                                                />
+                                                                {!blog.published && (
+                                                                    <div className="absolute inset-0 bg-black/60 rounded-2xl flex items-center justify-center backdrop-blur-[2px]">
+                                                                        <span className="text-[10px] font-bold text-white uppercase tracking-tighter bg-red-500/80 px-2 py-0.5 rounded shadow-lg">Draft</span>
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         )}
+
+                                                        <div className="flex-1 min-w-0 space-y-2">
+                                                            <div className="flex items-center gap-3 flex-wrap">
+                                                                <h3 className="text-lg md:text-2xl font-black text-white tracking-tight leading-tight flex items-center gap-2">
+                                                                    <span className="line-clamp-2">{blog.title}</span>
+                                                                </h3>
+                                                                {blog.featured && (
+                                                                    <div className="bg-yellow-500/10 p-1.5 rounded-full border border-yellow-500/30">
+                                                                        <Star className="text-yellow-500" size={14} fill="currentColor" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm">
+                                                                {blog.category && (
+                                                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400 font-bold uppercase tracking-widest text-[10px]">
+                                                                        {blog.category}
+                                                                    </span>
+                                                                )}
+                                                                <span className="text-white/40 flex items-center gap-1.5 font-medium">
+                                                                    <RefreshCw size={12} className="opacity-50" />
+                                                                    {formatDate(blog.created_at)}
+                                                                </span>
+                                                                <span className="text-white/40 flex items-center gap-1.5 font-medium">
+                                                                    <Eye size={12} className="opacity-50" />
+                                                                    {blog.reading_time || 5} min read
+                                                                </span>
+                                                            </div>
+
+                                                            {blog.tags?.length > 0 && (
+                                                                <div className="flex gap-2 pt-1">
+                                                                    {blog.tags.slice(0, 3).map((tag, i) => (
+                                                                        <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-white/60 font-medium lowercase">#{tag}</span>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <div className={`shrink-0 p-3 rounded-2xl transition-all duration-300 ${expandedBlog === blog.id ? 'bg-white/10 rotate-180' : 'bg-transparent group-hover:bg-white/5'}`}>
+                                                            <ChevronDown size={24} className={expandedBlog === blog.id ? 'text-white' : 'text-white/20'} />
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2 self-end sm:self-start">
-                                                    <span className={`px-2 md:px-3 py-1 rounded-full text-xs font-bold ${blog.published ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                                                        {blog.published ? 'Published' : 'Draft'}
-                                                    </span>
-                                                    {expandedBlog === blog.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        {/* Expanded Actions */}
-                                        {expandedBlog === blog.id && (
-                                            <div className="px-4 md:px-6 pb-4 md:pb-6 pt-2 border-t border-gray-800">
-                                                {blog.excerpt && (
-                                                    <p className="text-secondary mb-4 text-sm">{blog.excerpt}</p>
-                                                )}
-                                                <div className="flex flex-wrap gap-2 md:gap-3">
-                                                    <button
-                                                        onClick={() => handleEdit(blog)}
-                                                        className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 px-3 md:px-4 py-2 rounded-lg transition-colors text-sm"
-                                                    >
-                                                        <Pencil size={16} /> Edit
-                                                    </button>
-                                                    <button
-                                                        onClick={() => togglePublish(blog)}
-                                                        className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg transition-colors text-sm ${blog.published ? 'bg-orange-600 hover:bg-orange-700' : 'bg-green-600 hover:bg-green-700'}`}
-                                                    >
-                                                        {blog.published ? <EyeOff size={16} /> : <Eye size={16} />}
-                                                        <span className="hidden sm:inline">{blog.published ? 'Unpublish' : 'Publish'}</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => toggleFeatured(blog)}
-                                                        className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg transition-colors text-sm ${blog.featured ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-gray-600 hover:bg-gray-700'}`}
-                                                    >
-                                                        <Star size={16} fill={blog.featured ? "currentColor" : "none"} />
-                                                        <span className="hidden sm:inline">{blog.featured ? 'Unfeature' : 'Feature'}</span>
-                                                    </button>
-                                                    <a
-                                                        href={`/blog/${blog.slug}`}
-                                                        target="_blank"
-                                                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-3 md:px-4 py-2 rounded-lg transition-colors text-sm"
-                                                    >
-                                                        <Eye size={16} /> <span className="hidden sm:inline">View</span>
-                                                    </a>
-                                                    <button
-                                                        onClick={() => handleDelete(blog.id)}
-                                                        className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-3 md:px-4 py-2 rounded-lg transition-colors text-sm"
-                                                    >
-                                                        <Trash2 size={16} /> <span className="hidden sm:inline">Delete</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))
+                                                {/* Expanded Actions with Motion */}
+                                                <AnimatePresence>
+                                                    {expandedBlog === blog.id && (
+                                                        <motion.div
+                                                            initial={{ height: 0, opacity: 0 }}
+                                                            animate={{ height: 'auto', opacity: 1 }}
+                                                            exit={{ height: 0, opacity: 0 }}
+                                                            transition={{ duration: 0.3, ease: "circOut" }}
+                                                            className="overflow-hidden"
+                                                        >
+                                                            <div className="px-5 md:px-8 pb-8 pt-2 space-y-6">
+                                                                <div className="h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent w-full" />
+
+                                                                {blog.excerpt && (
+                                                                    <div className="bg-white/[0.03] p-4 rounded-2xl border border-white/5">
+                                                                        <p className="text-white/60 text-sm leading-relaxed italic">
+                                                                            &ldquo;{blog.excerpt}&rdquo;
+                                                                        </p>
+                                                                    </div>
+                                                                )}
+
+                                                                <div className="flex flex-wrap items-center gap-3">
+                                                                    <button
+                                                                        onClick={() => handleEdit(blog)}
+                                                                        className="group/btn flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-xl font-bold transition-all hover:scale-105 active:scale-95 shadow-xl"
+                                                                    >
+                                                                        <Pencil size={18} /> Edit Story
+                                                                    </button>
+
+                                                                    <div className="flex gap-2">
+                                                                        <button
+                                                                            onClick={() => togglePublish(blog)}
+                                                                            className={`p-2.5 rounded-xl transition-all border ${blog.published
+                                                                                ? 'bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20'
+                                                                                : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'}`}
+                                                                            title={blog.published ? 'Take Offline' : 'Go Live'}
+                                                                        >
+                                                                            {blog.published ? <EyeOff size={20} /> : <Eye size={20} />}
+                                                                        </button>
+
+                                                                        <button
+                                                                            onClick={() => toggleFeatured(blog)}
+                                                                            className={`p-2.5 rounded-xl transition-all border ${blog.featured
+                                                                                ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500 hover:bg-yellow-500/20'
+                                                                                : 'bg-gray-500/10 border-white/10 text-white/30 hover:bg-white/10'}`}
+                                                                            title={blog.featured ? 'Unmark Hero' : 'Mark as Hero'}
+                                                                        >
+                                                                            <Star size={20} fill={blog.featured ? "currentColor" : "none"} />
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <div className="ml-auto flex gap-2">
+                                                                        <a
+                                                                            href={`/blog/${blog.slug}`}
+                                                                            target="_blank"
+                                                                            className="flex items-center justify-center w-11 h-11 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all"
+                                                                        >
+                                                                            <Globe size={18} className="text-white/60" />
+                                                                        </a>
+                                                                        <button
+                                                                            onClick={() => handleDelete(blog.id)}
+                                                                            className="flex items-center justify-center w-11 h-11 bg-red-500/10 hover:bg-red-500 border border-red-500/30 hover:border-red-500 text-red-400 hover:text-white rounded-xl transition-all"
+                                                                        >
+                                                                            <Trash2 size={18} />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </motion.div>
+                                        ))}
+                                    </AnimatePresence>
+                                </div>
                             )}
                         </div>
                     )}
@@ -521,9 +598,9 @@ const ManageBlogs = () => {
                                         onChange={(e) => setForm({ ...form, category: e.target.value })}
                                         className="w-full bg-tertiary py-3 px-4 rounded-lg text-white outline-none"
                                     >
-                                        <option value="">Select Category</option>
+                                        <option value="" className="bg-[#1a1d2e]">Select Category</option>
                                         {categories.map((cat) => (
-                                            <option key={cat} value={cat}>{cat}</option>
+                                            <option key={cat} value={cat} className="bg-[#1a1d2e]">{cat}</option>
                                         ))}
                                     </select>
                                 </div>

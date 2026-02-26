@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Search, ArrowUpDown, Globe, Twitter, Plus, X, Save, RefreshCw, Menu, ChevronLeft, Settings, LayoutTemplate, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Search, ArrowUpDown, Globe, Twitter, Plus, X, Save, RefreshCw, Menu, ChevronLeft, Settings, LayoutTemplate, ChevronDown, FileText, Zap, ShieldCheck } from 'lucide-react';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { getSEORecords, saveSEORecord } from '../../services/SEOService';
 import Sidebar from '../../components/admin/Sidebar';
@@ -274,29 +275,69 @@ const SEOManager = () => {
                     </button>
                   </div>
 
-                  <div className="space-y-2 overflow-y-auto pr-1 custom-scrollbar flex-1" data-lenis-prevent>
-                    {isLoading ? (
-                      <div className="flex justify-center py-8"><RefreshCw className="animate-spin text-indigo-500" /></div>
-                    ) : filteredRecords.length === 0 ? (
-                      <div className="text-center py-8 text-gray-500 text-sm">No routes found</div>
-                    ) : (
-                      filteredRecords.map(record => (
-                        <div
-                          key={record.id}
-                          onClick={() => handleSelectRecord(record)}
-                          className={`p-3 rounded-xl cursor-pointer transition-all duration-200 border ${selectedRecord?.id === record.id
-                            ? 'bg-indigo-500/10 border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)]'
-                            : 'bg-black/20 border-transparent hover:bg-white/5 hover:border-white/10'
-                            }`}
+                  <div className="space-y-3 overflow-y-auto pr-2 custom-scrollbar flex-1" data-lenis-prevent>
+                    <AnimatePresence mode="popLayout">
+                      {isLoading ? (
+                        <div className="flex justify-center py-12"><RefreshCw className="animate-spin text-indigo-500/50" size={32} /></div>
+                      ) : filteredRecords.length === 0 ? (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-center py-12 text-gray-500 text-sm italic"
                         >
-                          <div className="font-medium text-white truncate">{record.pageRoute}</div>
-                          <div className="text-xs text-gray-400 mt-1 truncate">{record.metaTitle || 'No title set'}</div>
-                          <div className="text-[10px] text-gray-500 mt-2">
-                            {record.isNew ? 'Not configured yet' : `Updated: ${new Date(record.lastUpdated).toLocaleDateString()}`}
-                          </div>
-                        </div>
-                      ))
-                    )}
+                          No matching routes found
+                        </motion.div>
+                      ) : (
+                        filteredRecords.map((record, index) => (
+                          <motion.div
+                            layout
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.03 }}
+                            key={record.id}
+                            onClick={() => handleSelectRecord(record)}
+                            className={`group relative p-4 rounded-2xl cursor-pointer transition-all duration-300 border backdrop-blur-md ${selectedRecord?.id === record.id
+                              ? 'bg-indigo-500/15 border-indigo-500/40 shadow-[0_10px_30px_rgba(99,102,241,0.15)] ring-1 ring-indigo-500/20'
+                              : 'bg-white/[0.03] border-white/5 hover:bg-white/[0.06] hover:border-white/20'
+                              }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className={`mt-1 p-2 rounded-xl transition-colors ${selectedRecord?.id === record.id ? 'bg-indigo-500 text-white' : 'bg-white/5 text-gray-400 group-hover:text-white'}`}>
+                                {record.pageRoute.includes('[') ? <Zap size={16} /> : <FileText size={16} />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className={`font-bold text-sm tracking-tight truncate transition-colors ${selectedRecord?.id === record.id ? 'text-white' : 'text-gray-200'}`}>
+                                  {record.pageRoute}
+                                </div>
+                                <div className="text-[11px] text-gray-400 mt-1 truncate group-hover:text-gray-300 transition-colors">
+                                  {record.metaTitle || 'Untitled Route'}
+                                </div>
+
+                                <div className="flex items-center justify-between mt-3">
+                                  <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${record.isNew
+                                    ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+                                    : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}`}>
+                                    <div className={`w-1 h-1 rounded-full ${record.isNew ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                                    {record.isNew ? 'Draft' : 'Optimized'}
+                                  </div>
+                                  <div className="text-[9px] text-gray-500 font-mono">
+                                    {new Date(record.lastUpdated || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Selected Indicator Glow */}
+                            {selectedRecord?.id === record.id && (
+                              <motion.div
+                                layoutId="activeGlow"
+                                className="absolute inset-0 rounded-2xl bg-indigo-500/5 -z-10 blur-xl"
+                              />
+                            )}
+                          </motion.div>
+                        ))
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               </div>
@@ -546,9 +587,9 @@ const SEOManager = () => {
                                 onChange={handleInputChange}
                                 className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-gray-200 appearance-none"
                               >
-                                <option value="website">Website</option>
-                                <option value="article">Article</option>
-                                <option value="profile">Profile</option>
+                                <option value="website" className="bg-[#1a1d2e]">Website</option>
+                                <option value="article" className="bg-[#1a1d2e]">Article</option>
+                                <option value="profile" className="bg-[#1a1d2e]">Profile</option>
                               </select>
                             </div>
                             <div>
@@ -559,8 +600,8 @@ const SEOManager = () => {
                                 onChange={handleInputChange}
                                 className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-gray-200 appearance-none"
                               >
-                                <option value="summary_large_image">Large Image</option>
-                                <option value="summary">Summary</option>
+                                <option value="summary_large_image" className="bg-[#1a1d2e]">Large Image</option>
+                                <option value="summary" className="bg-[#1a1d2e]">Summary</option>
                               </select>
                             </div>
                           </div>
@@ -598,10 +639,10 @@ const SEOManager = () => {
                               onChange={handleInputChange}
                               className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-gray-200 appearance-none"
                             >
-                              <option value="index, follow">index, follow</option>
-                              <option value="noindex, follow">noindex, follow</option>
-                              <option value="index, nofollow">index, nofollow</option>
-                              <option value="noindex, nofollow">noindex, nofollow</option>
+                              <option value="index, follow" className="bg-[#1a1d2e]">index, follow</option>
+                              <option value="noindex, follow" className="bg-[#1a1d2e]">noindex, follow</option>
+                              <option value="index, nofollow" className="bg-[#1a1d2e]">index, nofollow</option>
+                              <option value="noindex, nofollow" className="bg-[#1a1d2e]">noindex, nofollow</option>
                             </select>
                           </div>
 

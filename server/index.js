@@ -581,6 +581,71 @@ app.delete('/api/skills/:id', authMiddleware, async (req, res) => {
     }
 });
 
+// --- EXPERIENCE ROUTES ---
+app.get('/api/experience', async (req, res) => {
+    try {
+        const experiences = await prisma.experience.findMany({
+            orderBy: { order: 'asc' },
+        });
+        res.json(experiences);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/api/experience', authMiddleware, async (req, res) => {
+    try {
+        const data = req.body;
+        const experience = await prisma.experience.create({ data });
+        res.status(201).json(experience);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/api/experience/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = req.body;
+        const experience = await prisma.experience.update({
+            where: { id },
+            data,
+        });
+        res.json(experience);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/experience/:id', authMiddleware, async (req, res) => {
+    try {
+        await prisma.experience.delete({ where: { id: req.params.id } });
+        res.json({ message: 'Experience deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/api/experience/reorder/bulk', authMiddleware, async (req, res) => {
+    try {
+        const { items } = req.body; // Array of { id, order }
+        
+        // Use a transaction to update all orders
+        await prisma.$transaction(
+            items.map((item) =>
+                prisma.experience.update({
+                    where: { id: item.id },
+                    data: { order: item.order },
+                })
+            )
+        );
+        
+        res.json({ message: 'Reordered successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // --- SETTINGS ROUTES ---
 app.get('/api/settings', async (req, res) => {
     try {
