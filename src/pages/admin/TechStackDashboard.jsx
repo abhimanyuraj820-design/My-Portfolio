@@ -250,14 +250,26 @@ const TechStackDashboard = () => {
                                             </button>
 
                                             <div className="flex flex-col items-center text-center gap-3">
-                                                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-cyan-500/30 group-hover:bg-cyan-500/10 transition-colors shadow-inner">
-                                                    {/* Ideally, we'd render the exact React Icon based on skill.iconName here. For now, we use a category fallback. */}
-                                                    <IconComponent size={28} className="text-white/70 group-hover:text-cyan-400 transition-colors" />
+                                                <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-cyan-500/30 group-hover:bg-cyan-500/10 transition-colors shadow-inner overflow-hidden p-2">
+                                                    {skill.iconName && (skill.iconName.startsWith('http') || skill.iconName.startsWith('data:image') || skill.iconName.startsWith('/')) ? (
+                                                        <img
+                                                            src={skill.iconName}
+                                                            alt={skill.name}
+                                                            className="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]"
+                                                            onError={(e) => {
+                                                                e.target.onerror = null;
+                                                                e.target.src = ''; // Clear src to stop showing broken image
+                                                                // Force re-render of fallback if needed or just handle via state
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <IconComponent size={28} className="text-white/70 group-hover:text-cyan-400 transition-colors" />
+                                                    )}
                                                 </div>
 
                                                 <div>
-                                                    <h3 className="text-white font-semibold truncate max-w-full">{skill.name}</h3>
-                                                    <p className="text-xs text-white/40 uppercase tracking-widest mt-0.5">{skill.category}</p>
+                                                    <h3 className="text-white font-semibold truncate max-w-full text-center">{skill.name}</h3>
+                                                    <p className="text-xs text-white/40 uppercase tracking-widest mt-0.5 text-center">{skill.category}</p>
                                                 </div>
 
                                                 <div className="w-full mt-2">
