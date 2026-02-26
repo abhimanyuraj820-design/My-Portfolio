@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { LayoutDashboard, FileText, MessageSquare, Mail, LogOut, X, Globe, Settings, Search, Zap } from "lucide-react";
+import { LayoutDashboard, FileText, MessageSquare, Mail, LogOut, X, Globe, Settings, Search, Zap, Activity, Users, Package, Receipt } from "lucide-react";
 import { useCommandPalette } from "../../context/CommandPaletteContext";
 import { useGlobalSettings } from "../../hooks/useGlobalSettings";
 import API_BASE_URL from "../../config";
@@ -127,12 +127,17 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     const navItems = [
         { path: "/x7k9m2p4q/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { path: "/x7k9m2p4q/analytics", icon: Activity, label: "Analytics" },
+        { path: "/x7k9m2p4q/subscribers", icon: Users, label: "Audience" },
         { path: "/x7k9m2p4q/projects", icon: FileText, label: "Projects" },
         { path: "/x7k9m2p4q/skills", icon: Globe, label: "Tech Stack" },
         { path: "/x7k9m2p4q/blogs", icon: FileText, label: "Blogs" },
         { path: "/x7k9m2p4q/testimonials", icon: MessageSquare, label: "Testimonials" },
         { path: "/x7k9m2p4q/contacts", icon: Mail, label: "Messages" },
         { path: "/x7k9m2p4q/seo", icon: Globe, label: "SEO Manager" },
+        { path: "__divider__", label: "Business Suite" },
+        { path: "/x7k9m2p4q/services", icon: Package, label: "Services" },
+        { path: "/x7k9m2p4q/invoices", icon: Receipt, label: "Invoices" },
         { path: "/x7k9m2p4q/settings", icon: Settings, label: "Settings" },
     ];
 
@@ -165,7 +170,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex flex-col gap-2 flex-1">
+                <nav className="flex flex-col gap-2 flex-1 overflow-y-auto scrollbar-none pb-2">
                     <button
                         onClick={() => { openPalette(); if (onClose) onClose(); }}
                         className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-base border-b border-white/10 text-gray-400 hover:text-white hover:bg-white/5 mb-2 text-left"
@@ -175,23 +180,33 @@ const Sidebar = ({ isOpen, onClose }) => {
                         <span className="hidden md:inline-block text-xs font-sans bg-white/10 border border-white/20 px-1.5 py-0.5 rounded text-gray-300">⌘K</span>
                     </button>
 
-                    {navItems.map(({ path, icon: Icon, label }) => (
-                        <Link
-                            key={path}
-                            to={path}
-                            onClick={handleLinkClick}
-                            className={`
-                                flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-base
-                                ${isActive(path)
-                                    ? 'bg-violet-600 text-white'
-                                    : 'text-secondary hover:text-white hover:bg-white/5'
-                                }
-                            `}
-                        >
-                            <Icon size={20} />
-                            {label}
-                        </Link>
-                    ))}
+                    {navItems.map(({ path, icon: Icon, label }) => {
+                        if (path === '__divider__') {
+                            return (
+                                <div key={label} className="pt-3 pb-1">
+                                    <p className="px-4 text-[9px] font-bold uppercase tracking-[0.15em] text-white/25">{label}</p>
+                                    <div className="mt-2 mx-4 h-px bg-white/8" />
+                                </div>
+                            );
+                        }
+                        return (
+                            <Link
+                                key={path}
+                                to={path}
+                                onClick={handleLinkClick}
+                                className={`
+                                    flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-base
+                                    ${isActive(path)
+                                        ? 'bg-violet-600 text-white'
+                                        : 'text-secondary hover:text-white hover:bg-white/5'
+                                    }
+                                `}
+                            >
+                                <Icon size={20} />
+                                {label}
+                            </Link>
+                        );
+                    })}
                 </nav>
 
                 {/* Live Availability Quick-Toggle */}

@@ -4,6 +4,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  /* Admin form utilities — used in Invoice Generator & Service Modal */
+  .form-input {
+    @apply w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none text-white text-sm placeholder-white/25 transition-colors;
+  }
+  .label-xs {
+    @apply text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-1.5 block;
+  }
+
+  /* Custom Scrollbar Utility */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+
 * {
   margin: 0;
   padding: 0;

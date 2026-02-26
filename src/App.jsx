@@ -1,5 +1,5 @@
 // ... imports ...
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LazyMotion, domAnimation } from "framer-motion";
 import { Toaster } from "sonner";
@@ -27,6 +27,10 @@ const SEOManager = lazy(() => import("./pages/admin/SEOManager"));
 const ProjectDashboard = lazy(() => import("./pages/admin/ProjectDashboard"));
 const TechStackDashboard = lazy(() => import("./pages/admin/TechStackDashboard"));
 const SettingsDashboard = lazy(() => import("./pages/admin/SettingsDashboard"));
+const AnalyticsHub = lazy(() => import("./pages/admin/AnalyticsHub"));
+const AudienceManager = lazy(() => import("./pages/admin/AudienceManager"));
+const ServicesManager = lazy(() => import("./pages/admin/ServicesManager"));
+const InvoiceGenerator = lazy(() => import("./pages/admin/InvoiceGenerator"));
 const Blogs = lazy(() => import("./pages/Blogs"));
 const BlogDetails = lazy(() => import("./pages/BlogDetails"));
 const ProtectedRoute = lazy(() => import("./components/admin/ProtectedRoute"));
@@ -47,8 +51,15 @@ const PageLoader = () => (
 );
 
 import { CommandPaletteProvider } from "./context/CommandPaletteContext";
+import API_BASE_URL from "./config";
 
-// ...
+// Tracking Helper Component - Hits the /api/track/view endpoint quietly on load
+const PageTracker = () => {
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/track/view`, { method: "POST" }).catch(() => { });
+  }, []);
+  return null;
+};
 
 const App = () => {
   return (
@@ -67,6 +78,7 @@ const App = () => {
                           path='/'
                           element={
                             <>
+                              <PageTracker />
                               {/* Dynamic SEO — reads live data from Admin → SEO Manager */}
                               <PageSEO route="/" />
                               {/* Navbar must be OUTSIDE any z-indexed wrapper */}
@@ -113,6 +125,10 @@ const App = () => {
                           <Route path="contacts" element={<ManageContacts />} />
                           <Route path="seo" element={<SEOManager />} />
                           <Route path="settings" element={<SettingsDashboard />} />
+                          <Route path="analytics" element={<AnalyticsHub />} />
+                          <Route path="subscribers" element={<AudienceManager />} />
+                          <Route path="services" element={<ServicesManager />} />
+                          <Route path="invoices" element={<InvoiceGenerator />} />
                         </Route>
 
                       </Routes>
