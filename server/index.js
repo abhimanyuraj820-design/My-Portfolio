@@ -432,6 +432,23 @@ app.delete('/api/seo/:id', authMiddleware, async (req, res) => {
 });
 
 // --- PROJECT ROUTES ---
+
+// GET /api/projects/featured – top 3 featured projects sorted by priorityOrder.
+// Must be declared BEFORE /api/projects/:id (if added later) to avoid route shadowing.
+app.get('/api/projects/featured', async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 3;
+        const projects = await prisma.project.findMany({
+            where: { isFeatured: true },
+            orderBy: [{ priorityOrder: 'desc' }, { createdAt: 'desc' }],
+            take: limit,
+        });
+        res.json(projects);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get('/api/projects', async (req, res) => {
     try {
         const projects = await prisma.project.findMany({

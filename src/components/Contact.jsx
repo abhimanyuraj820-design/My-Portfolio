@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaPhoneAlt } from 'react-icons/fa';
@@ -141,24 +141,49 @@ const Contact = () => {
         }
     }, [form]);
 
-    const contactMethods = [
+    const [contactMethods, setContactMethods] = useState([
         {
-            title: "Email", content: "novanexusltd001@gmail.com", icon: FaEnvelope,
-            link: "mailto:novanexusltd001@gmail.com", color: "from-violet-600 to-indigo-600"
+            title: "Email", content: "Loading...", icon: FaEnvelope,
+            link: "#", color: "from-violet-600 to-indigo-600"
         },
         {
-            title: "WhatsApp", content: "Chat with me directly", icon: FaWhatsapp,
-            link: "https://wa.me/919801834437", color: "from-green-500 to-emerald-600"
-        },
-        {
-            title: "Call", content: "+91 98018 34437", icon: FaPhoneAlt,
-            link: "tel:+919801834437", color: "from-blue-500 to-indigo-600"
-        },
-        {
-            title: "Location", content: "Remote / Global", icon: FaMapMarkerAlt,
-            link: "https://www.google.com/maps", color: "from-cyan-500 to-blue-600"
+            title: "WhatsApp", content: "Loading...", icon: FaWhatsapp,
+            link: "#", color: "from-green-500 to-emerald-600"
         }
-    ];
+    ]);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/settings`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setContactMethods([
+                        {
+                            title: "Email", content: data.contactEmail || "Contact Email", icon: FaEnvelope,
+                            link: `mailto:${data.contactEmail}`, color: "from-violet-600 to-indigo-600"
+                        },
+                        {
+                            title: "WhatsApp", content: "Chat with me directly", icon: FaWhatsapp,
+                            link: `https://wa.me/${data.whatsappNumber?.replace(/\D/g, '')}`, color: "from-green-500 to-emerald-600"
+                        },
+                        {
+                            title: "Call", content: data.whatsappNumber || "Mobile Number", icon: FaPhoneAlt,
+                            link: `tel:${data.whatsappNumber}`, color: "from-blue-500 to-indigo-600"
+                        },
+                        {
+                            title: "Location", content: "Remote / Global", icon: FaMapMarkerAlt,
+                            link: "https://www.google.com/maps", color: "from-cyan-500 to-blue-600"
+                        }
+                    ]);
+                }
+            } catch (error) {
+                console.error("Failed to fetch contact settings:", error);
+            }
+        };
+
+        fetchSettings();
+    }, []);
 
     const inputClass = "w-full bg-[#111827] text-white text-sm sm:text-base py-3 sm:py-3.5 px-4 rounded-xl border border-white/5 focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/30 outline-none placeholder:text-white/25 transition-all duration-200";
 

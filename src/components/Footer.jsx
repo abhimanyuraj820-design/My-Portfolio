@@ -14,38 +14,48 @@ const Footer = () => {
 
     const currentYear = new Date().getFullYear();
 
-    const socialLinks = [
-        {
-            name: "GitHub",
-            url: "https://github.com/Abhimanyuraj8252",
-            icon: <FaGithub size={20} />,
-            color: "hover:text-[#333] hover:bg-white",
-        },
-        {
-            name: "LinkedIn",
-            url: "https://www.linkedin.com/in/abhimanyuraj825",
-            icon: <FaLinkedin size={20} />,
-            color: "hover:text-[#0077b5] hover:bg-white",
-        },
-        {
-            name: "Instagram",
-            url: "https://www.instagram.com/abhimanyu_raj_825",
-            icon: <FaInstagram size={20} />,
-            color: "hover:text-[#e4405f] hover:bg-white",
-        },
-        {
-            name: "Facebook",
-            url: "https://www.facebook.com/share/15ZqCjjHms/",
-            icon: <FaFacebook size={20} />,
-            color: "hover:text-[#1877f2] hover:bg-white",
-        },
-        {
-            name: "X (Twitter)",
-            url: "https://x.com/Abhimanyura8252",
-            icon: <FaTwitter size={20} />,
-            color: "hover:text-[#1da1f2] hover:bg-white",
-        },
-    ];
+    const [socialLinks, setSocialLinks] = React.useState([]);
+
+    React.useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/api/settings");
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.socialLinks) {
+                        const platforms = {
+                            github: { icon: <FaGithub size={20} />, color: "hover:text-[#333] hover:bg-white", name: "GitHub" },
+                            linkedin: { icon: <FaLinkedin size={20} />, color: "hover:text-[#0077b5] hover:bg-white", name: "LinkedIn" },
+                            instagram: { icon: <FaInstagram size={20} />, color: "hover:text-[#e4405f] hover:bg-white", name: "Instagram" },
+                            facebook: { icon: <FaFacebook size={20} />, color: "hover:text-[#1877f2] hover:bg-white", name: "Facebook" },
+                            twitter: { icon: <FaTwitter size={20} />, color: "hover:text-[#1da1f2] hover:bg-white", name: "X (Twitter)" },
+                            reddit: { icon: <FaGithub size={20} />, color: "hover:text-[#ff4500] hover:bg-white", name: "Reddit" }, // Generic fallback for reddit
+                        };
+
+                        const dynamicLinks = Object.entries(data.socialLinks)
+                            .filter(([_, url]) => url)
+                            .map(([platform, url]) => {
+                                const matchedPlatform = platforms[platform.toLowerCase()] || {
+                                    icon: <FaGithub size={20} />,
+                                    color: "hover:text-black hover:bg-white",
+                                    name: platform.charAt(0).toUpperCase() + platform.slice(1)
+                                };
+                                return {
+                                    ...matchedPlatform,
+                                    url
+                                };
+                            });
+
+                        setSocialLinks(dynamicLinks);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch social links:", error);
+            }
+        };
+
+        fetchSettings();
+    }, []);
 
     return (
         <footer className="w-full bg-[#050816] py-10 border-t border-t-[#1f1f3a] relative z-10">

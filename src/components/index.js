@@ -8,8 +8,10 @@ import Feed from "./Feed";
 import Contact from "./Contact";
 import { ComputersCanvas, BallCanvas, StarsCanvas } from "./canvas";
 import CustomDropdown from "./CustomDropdown";
-
 import Footer from "./Footer";
+import AvailabilityBadge from "./AvailabilityBadge";
+import PageSEO from "./PageSEO";
+import LatestProjects from "./LatestProjects";
 
 export {
     Navbar,
@@ -25,4 +27,7 @@ export {
     StarsCanvas,
     Footer,
     CustomDropdown,
+    AvailabilityBadge,
+    PageSEO,
+    LatestProjects,
 };
