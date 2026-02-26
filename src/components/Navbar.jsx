@@ -190,18 +190,15 @@ const Navbar = () => {
         };
     }, [toggle, lenis]);
 
-    // Scroll to element with retry mechanism using Lenis
+    // Scroll to element with retry mechanism — uses Lenis on desktop, native scroll on mobile
     const scrollToSection = (navId, maxRetries = 30) => {
-        if (!lenis) return;
-
-        // Force start if stopped (safety net in case of stuck state)
-        if (lenis.isStopped) {
-            lenis.start();
-        }
-
         // Special handling for "top"
         if (navId === "top") {
-            lenis.scrollTo(0);
+            if (lenis) {
+                lenis.scrollTo(0);
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
             return;
         }
 
@@ -210,8 +207,15 @@ const Navbar = () => {
         const tryScroll = () => {
             const el = document.getElementById(navId);
             if (el) {
-                // Element found, scroll to it using Lenis
-                lenis.scrollTo(el, { offset: -80 }); // Offset for fixed header
+                if (lenis) {
+                    // Force start if stopped (safety net in case of stuck state)
+                    if (lenis.isStopped) lenis.start();
+                    lenis.scrollTo(el, { offset: -80 }); // Offset for fixed header
+                } else {
+                    // Native fallback for mobile (Lenis is disabled)
+                    const y = el.getBoundingClientRect().top + window.scrollY - 80;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                }
                 return true;
             }
 
