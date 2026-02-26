@@ -8,6 +8,7 @@ import { Navbar, Hero, StarsCanvas, Footer } from "./components"; // Keep critic
 import SmoothScroll from "./components/SmoothScroll";
 import { AuthProvider } from "./context/AuthContext";
 import ErrorBoundary from "./components/ErrorBoundary";
+import CommandPalette from "./components/CommandPalette";
 
 // Lazy Load heavy components
 const About = lazy(() => import("./components/About"));
@@ -25,6 +26,7 @@ const ManageContacts = lazy(() => import("./pages/admin/ManageContacts"));
 const SEOManager = lazy(() => import("./pages/admin/SEOManager"));
 const ProjectDashboard = lazy(() => import("./pages/admin/ProjectDashboard"));
 const TechStackDashboard = lazy(() => import("./pages/admin/TechStackDashboard"));
+const SettingsDashboard = lazy(() => import("./pages/admin/SettingsDashboard"));
 const Blogs = lazy(() => import("./pages/Blogs"));
 const BlogDetails = lazy(() => import("./pages/BlogDetails"));
 const ProtectedRoute = lazy(() => import("./components/admin/ProtectedRoute"));
@@ -44,76 +46,83 @@ const PageLoader = () => (
   </div>
 );
 
+import { CommandPaletteProvider } from "./context/CommandPaletteContext";
+
+// ...
+
 const App = () => {
   return (
     <HelmetProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <SmoothScroll>
-            <LazyMotion features={domAnimation} strict>
-              <div className='relative z-0 bg-primary w-full overflow-clip min-h-screen'>
-                <ErrorBoundary>
-                  <Suspense fallback={<PageLoader />}>
-                    <Routes>
-                      {/* Public Routes */}
-                      <Route
-                        path='/'
-                        element={
-                          <>
-                            {/* Navbar must be OUTSIDE any z-indexed wrapper */}
-                            <Navbar />
-                            <div className='bg-hero-pattern bg-cover bg-no-repeat bg-center'>
-                              <Hero />
-                            </div>
-                            <main>
-                              <About />
-                              <Experience />
-                              <Tech />
-                              <Works />
-                              <Feed />
-                              <div className='relative'>
-                                <Contact />
-                                <StarsCanvas />
+      <CommandPaletteProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <SmoothScroll>
+              <LazyMotion features={domAnimation} strict>
+                <div className='relative z-0 bg-primary w-full overflow-clip min-h-screen'>
+                  <ErrorBoundary>
+                    <Suspense fallback={<PageLoader />}>
+                      <Routes>
+                        {/* Public Routes */}
+                        <Route
+                          path='/'
+                          element={
+                            <>
+                              {/* Navbar must be OUTSIDE any z-indexed wrapper */}
+                              <Navbar />
+                              <div className='bg-hero-pattern bg-cover bg-no-repeat bg-center'>
+                                <Hero />
                               </div>
-                            </main>
-                            <Footer />
-                          </>
-                        }
-                      />
+                              <main>
+                                <About />
+                                <Experience />
+                                <Tech />
+                                <Works />
+                                <Feed />
+                                <div className='relative'>
+                                  <Contact />
+                                  <StarsCanvas />
+                                </div>
+                              </main>
+                              <Footer />
+                            </>
+                          }
+                        />
 
-                      {/* Legal Routes */}
-                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                      <Route path="/refund-policy" element={<RefundPolicy />} />
-                      <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                        {/* Legal Routes */}
+                        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                        <Route path="/refund-policy" element={<RefundPolicy />} />
+                        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
-                      {/* Admin Routes */}
-                      <Route path="/blog" element={<Blogs />} />
-                      <Route path="/blog/:slug" element={<BlogDetails />} />
-                      <Route path="/testimonials" element={<TestimonialsPage />} />
+                        {/* Admin Routes */}
+                        <Route path="/blog" element={<Blogs />} />
+                        <Route path="/blog/:slug" element={<BlogDetails />} />
+                        <Route path="/testimonials" element={<TestimonialsPage />} />
 
-                      {/* Admin Routes - Hidden URL for security */}
-                      <Route path="/x7k9m2p4q/login" element={<Login />} />
+                        {/* Admin Routes - Hidden URL for security */}
+                        <Route path="/x7k9m2p4q/login" element={<Login />} />
 
-                      <Route path="/x7k9m2p4q" element={<ProtectedRoute />}>
-                        <Route index element={<Dashboard />} />
-                        <Route path="dashboard" element={<Dashboard />} />
-                        <Route path="projects" element={<ProjectDashboard />} />
-                        <Route path="skills" element={<TechStackDashboard />} />
-                        <Route path="blogs" element={<ManageBlogs />} />
-                        <Route path="testimonials" element={<ManageTestimonials />} />
-                        <Route path="contacts" element={<ManageContacts />} />
-                        <Route path="seo" element={<SEOManager />} />
-                      </Route>
+                        <Route path="/x7k9m2p4q" element={<ProtectedRoute />}>
+                          <Route index element={<Dashboard />} />
+                          <Route path="dashboard" element={<Dashboard />} />
+                          <Route path="projects" element={<ProjectDashboard />} />
+                          <Route path="skills" element={<TechStackDashboard />} />
+                          <Route path="blogs" element={<ManageBlogs />} />
+                          <Route path="testimonials" element={<ManageTestimonials />} />
+                          <Route path="contacts" element={<ManageContacts />} />
+                          <Route path="seo" element={<SEOManager />} />
+                          <Route path="settings" element={<SettingsDashboard />} />
+                        </Route>
 
-                    </Routes>
-                  </Suspense>
-                </ErrorBoundary>
-              </div>
-            </LazyMotion>
-            <Toaster position="bottom-right" richColors />
-          </SmoothScroll>
-        </BrowserRouter>
-      </AuthProvider>
+                      </Routes>
+                    </Suspense>
+                  </ErrorBoundary>
+                </div>
+              </LazyMotion>
+              <Toaster position="bottom-right" richColors />
+            </SmoothScroll>
+          </BrowserRouter>
+        </AuthProvider>
+      </CommandPaletteProvider>
     </HelmetProvider >
   );
 };

@@ -1,12 +1,14 @@
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { LayoutDashboard, FileText, MessageSquare, Mail, LogOut, X, Globe } from "lucide-react";
+import { LayoutDashboard, FileText, MessageSquare, Mail, LogOut, X, Globe, Settings, Search } from "lucide-react";
+import { useCommandPalette } from "../../context/CommandPaletteContext";
 
 const Sidebar = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { logout } = useAuth();
+    const { open: openPalette } = useCommandPalette();
 
     const handleLogout = () => {
         logout();
@@ -28,6 +30,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { path: "/x7k9m2p4q/testimonials", icon: MessageSquare, label: "Testimonials" },
         { path: "/x7k9m2p4q/contacts", icon: Mail, label: "Messages" },
         { path: "/x7k9m2p4q/seo", icon: Globe, label: "SEO Manager" },
+        { path: "/x7k9m2p4q/settings", icon: Settings, label: "Settings" },
     ];
 
     return (
@@ -60,6 +63,15 @@ const Sidebar = ({ isOpen, onClose }) => {
 
                 {/* Navigation */}
                 <nav className="flex flex-col gap-2 flex-1">
+                    <button
+                        onClick={() => { openPalette(); if (onClose) onClose(); }}
+                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-base border-b border-white/10 text-gray-400 hover:text-white hover:bg-white/5 mb-2 text-left"
+                    >
+                        <Search size={20} />
+                        <span className="flex-1">Search / Commands</span>
+                        <span className="hidden md:inline-block text-xs font-sans bg-white/10 border border-white/20 px-1.5 py-0.5 rounded text-gray-300">⌘K</span>
+                    </button>
+
                     {navItems.map(({ path, icon: Icon, label }) => (
                         <Link
                             key={path}

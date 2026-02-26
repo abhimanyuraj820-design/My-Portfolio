@@ -521,6 +521,45 @@ app.delete('/api/skills/:id', authMiddleware, async (req, res) => {
     }
 });
 
+// --- SETTINGS ROUTES ---
+app.get('/api/settings', async (req, res) => {
+    try {
+        let settings = await prisma.profileSettings.findFirst();
+        if (!settings) {
+            settings = await prisma.profileSettings.create({
+                data: {} // Uses schema defaults
+            });
+        }
+        res.json(settings);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/api/settings', authMiddleware, async (req, res) => {
+    try {
+        const { fullName, headline, bio, avatarUrl, resumeUrl, isAvailableForWork, socialLinks, contactEmail, whatsappNumber } = req.body;
+
+        // Find existing settings
+        let settings = await prisma.profileSettings.findFirst();
+
+        if (!settings) {
+            settings = await prisma.profileSettings.create({
+                data: { fullName, headline, bio, avatarUrl, resumeUrl, isAvailableForWork, socialLinks, contactEmail, whatsappNumber }
+            });
+        } else {
+            settings = await prisma.profileSettings.update({
+                where: { id: settings.id },
+                data: { fullName, headline, bio, avatarUrl, resumeUrl, isAvailableForWork, socialLinks, contactEmail, whatsappNumber }
+            });
+        }
+
+        res.json(settings);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
         console.log(`Server running on http://localhost:${PORT}`);

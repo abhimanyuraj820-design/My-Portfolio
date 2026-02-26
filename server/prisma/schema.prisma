@@ -106,3 +106,17 @@ model Skill {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model ProfileSettings {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fullName           String   @default("Admin")
+  headline           String   @default("Full Stack Developer")
+  bio                String   @default("I am a passionate developer.")
+  avatarUrl          String   @default("")
+  resumeUrl          String   @default("")
+  isAvailableForWork Boolean  @default(true) // Controls the green dot on the main site
+  socialLinks        Json?    // Store platform names and URLs: { github: "...", linkedin: "..." }
+  contactEmail       String   @default("")
+  whatsappNumber     String   @default("")
+  updatedAt          DateTime @updatedAt
+}
