@@ -6,6 +6,7 @@ import { m as motion } from 'framer-motion';
 import TechModal from '../../components/admin/TechModal';
 import Sidebar from '../../components/admin/Sidebar';
 import API_BASE_URL from '../../config';
+import { getSkillIconUrl } from '../../utils/skillIconMap';
 
 const CATEGORIES = ['All', 'Frontend', 'Backend', 'Tools', 'Language', 'Other'];
 
@@ -230,6 +231,7 @@ const TechStackDashboard = () => {
                             >
                                 {filteredSkills.map((skill, index) => {
                                     const IconComponent = CategoryIconMap[skill.category] || Code2;
+                                    const iconSrc = getSkillIconUrl(skill.name, skill.iconUrl);
                                     return (
                                         <motion.div
                                             key={skill.id}
@@ -258,9 +260,9 @@ const TechStackDashboard = () => {
                                                         boxShadow: skill.color ? `inset 0 0 20px ${skill.color}20` : 'none'
                                                     }}
                                                 >
-                                                    {skill.iconUrl && (skill.iconUrl.startsWith('http') || skill.iconUrl.startsWith('data:image') || skill.iconUrl.startsWith('/')) ? (
+                                                    {iconSrc && (iconSrc.startsWith('http') || iconSrc.startsWith('data:image') || iconSrc.startsWith('/')) ? (
                                                         <img
-                                                            src={skill.iconUrl}
+                                                            src={iconSrc}
                                                             alt={skill.name}
                                                             className="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]"
                                                             onError={(e) => {

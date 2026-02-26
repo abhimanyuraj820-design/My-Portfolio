@@ -4,6 +4,7 @@ import { SectionWrapper } from "../hoc";
 import { Loader2, Code2, Globe, Cpu, Wrench } from "lucide-react";
 import { styles } from "../styles";
 import API_BASE_URL from "../config";
+import { getSkillIconUrl } from "../utils/skillIconMap";
 
 /**
  * Ultra-Premium Futuristic Styling Configurations
@@ -31,7 +32,7 @@ const TechCard = ({ skill, index }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     // Validate if the iconUrl is a valid URL or Base64. Fix Three.js specifically if it's the broken devicon link.
-    let iconSrc = skill.iconUrl;
+    let iconSrc = getSkillIconUrl(skill.name, skill.iconUrl);
     if (skill.name.toLowerCase().includes("three")) {
         // The official devicon for threejs often fails loading in some contexts; substitute with a reliable SVG
         iconSrc = "https://raw.githubusercontent.com/mrdoob/three.js/master/files/favicon.ico";
