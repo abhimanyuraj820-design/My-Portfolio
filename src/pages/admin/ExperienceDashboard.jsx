@@ -2,10 +2,78 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Briefcase, Calendar, Edit2, Trash2, GripVertical, Loader2, Menu, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'sonner';
-import { m as motion, Reorder } from 'framer-motion';
+import { m as motion, Reorder, useDragControls } from 'framer-motion';
 import Sidebar from '../../components/admin/Sidebar';
 import ExperienceModal from '../../components/admin/ExperienceModal';
 import API_BASE_URL from '../../config';
+
+// Separate component so each item gets its own drag controls
+const ExperienceReorderItem = ({ exp, onEdit, onDelete, formatDate }) => {
+    const dragControls = useDragControls();
+
+    return (
+        <Reorder.Item
+            key={exp.id}
+            value={exp}
+            dragListener={false}
+            dragControls={dragControls}
+            className="relative z-10"
+        >
+            <div className="group bg-[#13111c]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:border-indigo-500/50 transition-all duration-300 flex flex-col sm:flex-row gap-5 items-start sm:items-center shadow-lg">
+
+                {/* Drag Handle — only visible on sm+ */}
+                <div
+                    className="cursor-grab active:cursor-grabbing p-2 text-white/20 hover:text-white/60 transition-colors hidden sm:block touch-none"
+                    onPointerDown={(e) => dragControls.start(e)}
+                >
+                    <GripVertical size={20} />
+                </div>
+
+                {/* Logo/Icon */}
+                <div className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 overflow-hidden p-2">
+                    {exp.logoUrl ? (
+                        <img src={exp.logoUrl} alt={exp.company} className="w-full h-full object-contain" />
+                    ) : (
+                        <Briefcase size={24} className="text-white/40" />
+                    )}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                    <h3 className="text-xl font-bold text-white break-words leading-tight">{exp.role}</h3>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 text-sm">
+                        <span className="text-indigo-400 font-medium break-words">{exp.company}</span>
+                        <span className="text-white/20 hidden sm:inline">•</span>
+                        <div className="flex items-center gap-1.5 text-white/50">
+                            <Calendar size={14} />
+                            <span>
+                                {formatDate(exp.startDate)} - {exp.currentJob ? 'Present' : formatDate(exp.endDate)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-end mt-4 sm:mt-0 pt-4 sm:pt-0 border-t border-white/5 sm:border-0">
+                    <button
+                        onClick={() => onEdit(exp)}
+                        className="p-2 bg-white/5 hover:bg-indigo-500/20 text-white/60 hover:text-indigo-400 rounded-lg transition-colors"
+                        title="Edit"
+                    >
+                        <Edit2 size={18} />
+                    </button>
+                    <button
+                        onClick={() => onDelete(exp.id)}
+                        className="p-2 bg-white/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 rounded-lg transition-colors"
+                        title="Delete"
+                    >
+                        <Trash2 size={18} />
+                    </button>
+                </div>
+            </div>
+        </Reorder.Item>
+    );
+};
 
 const ExperienceDashboard = () => {
     const [experiences, setExperiences] = useState([]);
@@ -63,6 +131,25 @@ const ExperienceDashboard = () => {
         }
     };
 
+    const persistOrder = async (orderedExperiences, showSuccessToast = true) => {
+        const token = localStorage.getItem('token');
+        const items = orderedExperiences.map((item, index) => ({ id: item.id, order: index }));
+
+        const res = await fetch(`${API_BASE_URL}/api/experience/reorder/bulk`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ items })
+        });
+
+        if (!res.ok) throw new Error('Failed to save new order');
+        if (showSuccessToast) {
+            toast.success('Order updated successfully');
+        }
+    };
+
     const handleSaveExperience = async (formData) => {
         try {
             const token = localStorage.getItem('token');
@@ -71,11 +158,13 @@ const ExperienceDashboard = () => {
                 : `${API_BASE_URL}/api/experience`;
 
             const method = editingExperience ? 'PUT' : 'POST';
+            const requestedPosition = Number(formData.position) || 1;
+            const maxPosition = editingExperience ? experiences.length : experiences.length + 1;
+            const clampedPosition = Math.max(1, Math.min(requestedPosition, maxPosition));
+            const targetOrder = clampedPosition - 1;
 
-            // If it's a new item, set its order to be at the end
-            if (!editingExperience) {
-                formData.order = experiences.length;
-            }
+            const payload = { ...formData, order: targetOrder };
+            delete payload.position;
 
             const res = await fetch(url, {
                 method,
@@ -83,44 +172,41 @@ const ExperienceDashboard = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(payload)
             });
 
             if (!res.ok) throw new Error('Failed to save experience');
             const savedExperience = await res.json();
 
+            const withoutEdited = editingExperience
+                ? experiences.filter((e) => e.id !== editingExperience.id)
+                : [...experiences];
+
+            withoutEdited.splice(targetOrder, 0, savedExperience);
+            const reorderedExperiences = withoutEdited.map((item, index) => ({ ...item, order: index }));
+
+            setExperiences(reorderedExperiences);
+            await persistOrder(reorderedExperiences, false);
+
             if (editingExperience) {
-                setExperiences(prev => prev.map(e => e.id === editingExperience.id ? savedExperience : e));
                 toast.success('Experience updated successfully');
             } else {
-                setExperiences(prev => [...prev, savedExperience]);
                 toast.success('Experience added successfully');
             }
             setIsModalOpen(false);
         } catch (error) {
             console.error('Save error:', error);
             toast.error(error.message);
+            fetchExperiences();
         }
     };
 
     const handleReorder = async (newOrder) => {
-        setExperiences(newOrder);
-        
-        try {
-            const token = localStorage.getItem('token');
-            const items = newOrder.map((item, index) => ({ id: item.id, order: index }));
-            
-            const res = await fetch(`${API_BASE_URL}/api/experience/reorder/bulk`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ items })
-            });
+        const normalizedOrder = newOrder.map((item, index) => ({ ...item, order: index }));
+        setExperiences(normalizedOrder);
 
-            if (!res.ok) throw new Error('Failed to save new order');
-            toast.success('Order updated successfully');
+        try {
+            await persistOrder(normalizedOrder, true);
         } catch (error) {
             console.error('Reorder error:', error);
             toast.error('Failed to save new order. Refreshing...');
@@ -188,60 +274,16 @@ const ExperienceDashboard = () => {
                             <div className="relative">
                                 {/* Vertical Line */}
                                 <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-white/10 hidden sm:block" />
-                                
+
                                 <Reorder.Group axis="y" values={experiences} onReorder={handleReorder} className="space-y-4">
                                     {experiences.map((exp) => (
-                                        <Reorder.Item key={exp.id} value={exp} className="relative z-10">
-                                            <div className="group bg-[#13111c]/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:border-indigo-500/50 transition-all duration-300 flex flex-col sm:flex-row gap-5 items-start sm:items-center shadow-lg">
-                                                
-                                                {/* Drag Handle */}
-                                                <div className="cursor-grab active:cursor-grabbing p-2 text-white/20 hover:text-white/60 transition-colors hidden sm:block">
-                                                    <GripVertical size={20} />
-                                                </div>
-
-                                                {/* Logo/Icon */}
-                                                <div className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 overflow-hidden p-2">
-                                                    {exp.logoUrl ? (
-                                                        <img src={exp.logoUrl} alt={exp.company} className="w-full h-full object-contain" />
-                                                    ) : (
-                                                        <Briefcase size={24} className="text-white/40" />
-                                                    )}
-                                                </div>
-
-                                                {/* Content */}
-                                                <div className="flex-1 min-w-0">
-                                                    <h3 className="text-xl font-bold text-white truncate">{exp.role}</h3>
-                                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 text-sm">
-                                                        <span className="text-indigo-400 font-medium">{exp.company}</span>
-                                                        <span className="text-white/20 hidden sm:inline">•</span>
-                                                        <div className="flex items-center gap-1.5 text-white/50">
-                                                            <Calendar size={14} />
-                                                            <span>
-                                                                {formatDate(exp.startDate)} - {exp.currentJob ? 'Present' : formatDate(exp.endDate)}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Actions */}
-                                                <div className="flex items-center gap-2 w-full sm:w-auto justify-end mt-4 sm:mt-0 pt-4 sm:pt-0 border-t border-white/5 sm:border-0">
-                                                    <button
-                                                        onClick={() => handleEditExperience(exp)}
-                                                        className="p-2 bg-white/5 hover:bg-indigo-500/20 text-white/60 hover:text-indigo-400 rounded-lg transition-colors"
-                                                        title="Edit"
-                                                    >
-                                                        <Edit2 size={18} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteExperience(exp.id)}
-                                                        className="p-2 bg-white/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 rounded-lg transition-colors"
-                                                        title="Delete"
-                                                    >
-                                                        <Trash2 size={18} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </Reorder.Item>
+                                        <ExperienceReorderItem
+                                            key={exp.id}
+                                            exp={exp}
+                                            onEdit={handleEditExperience}
+                                            onDelete={handleDeleteExperience}
+                                            formatDate={formatDate}
+                                        />
                                     ))}
                                 </Reorder.Group>
                             </div>
@@ -269,6 +311,7 @@ const ExperienceDashboard = () => {
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleSaveExperience}
                 experience={editingExperience}
+                experiences={experiences}
             />
         </div>
     );

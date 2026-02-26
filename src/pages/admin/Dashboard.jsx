@@ -62,7 +62,7 @@ const Dashboard = () => {
         <div className="flex min-h-screen bg-[#0f1117]">
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            <div className="flex-1 md:ml-64 min-h-screen">
+            <div className="flex-1 md:ml-64 min-h-screen overflow-x-hidden">
                 {/* Mobile Header */}
                 <div className="md:hidden flex items-center gap-3 px-4 py-3 bg-[#161822] border-b border-[#252836] sticky top-0 z-30">
                     <button onClick={() => setSidebarOpen(true)} className="p-2 text-white/60 hover:text-white rounded-lg transition-colors"><Menu size={20} /></button>
@@ -93,14 +93,14 @@ const Dashboard = () => {
                     </div>
 
                     {/* Tabs */}
-                    <div className="flex gap-1 bg-[#1a1d2e] p-1.5 rounded-xl mb-6 w-fit border border-[#252836]">
+                    <div className="flex gap-1 bg-[#1a1d2e] p-1.5 rounded-xl mb-6 w-full md:w-fit overflow-x-auto custom-scrollbar flex-nowrap border border-[#252836]">
                         {[
                             { id: 'overview', label: 'Overview', icon: Layers },
                             { id: 'clients', label: 'Clients', icon: Users },
                             { id: 'analytics', label: 'Analytics', icon: BarChart3 },
                         ].map(tab => (
                             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === tab.id
+                                className={`flex-1 min-w-[120px] md:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${activeTab === tab.id
                                     ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/25'
                                     : 'text-white/40 hover:text-white/70'}`}>
                                 <tab.icon size={14} /> {tab.label}

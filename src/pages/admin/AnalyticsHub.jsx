@@ -300,7 +300,7 @@ const AnalyticsHub = () => {
                                         <Globe size={18} className="text-emerald-400" /> Geography
                                     </h3>
                                     {data.geoData.length === 0 ? (
-                                        <EmptyChart message="No geo data yet" sub="Geo tracking uses Vercel/Cloudflare IP headers — available in production, not on localhost." />
+                                        <EmptyChart message="No geo data yet" sub="Geo tracking uses Vercel/Cloudflare IP headers — available in production, not in local development." />
                                     ) : (
                                         <div className="space-y-4 max-h-[250px] overflow-y-auto pr-2">
                                             {[...data.geoData].sort((a, b) => b.value - a.value).map((item, i) => {

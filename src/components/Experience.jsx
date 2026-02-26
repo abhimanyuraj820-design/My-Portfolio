@@ -75,10 +75,10 @@ const ExperienceCard = ({ experience, index }) => {
                         {/* Title row */}
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                             <div className="min-w-0">
-                                <h3 className="text-white font-bold text-[16px] sm:text-[19px] leading-tight truncate">
+                                <h3 className="text-white font-bold text-[16px] sm:text-[19px] leading-tight break-words whitespace-normal">
                                     {experience.role}
                                 </h3>
-                                <p className={`bg-gradient-to-r ${gradient} bg-clip-text text-transparent text-[13px] sm:text-[14px] font-semibold mt-1`}>
+                                <p className={`bg-gradient-to-r ${gradient} bg-clip-text text-transparent text-[13px] sm:text-[14px] font-semibold mt-1 break-words whitespace-normal`}>
                                     {experience.company}
                                 </p>
                             </div>

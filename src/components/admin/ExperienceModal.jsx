@@ -10,9 +10,10 @@ const initialForm = {
     description: '',
     logoUrl: '',
     currentJob: false,
+    position: 1,
 };
 
-const ExperienceModal = ({ isOpen, onClose, onSave, experience = null }) => {
+const ExperienceModal = ({ isOpen, onClose, onSave, experience = null, experiences = [] }) => {
     const [formData, setFormData] = useState(initialForm);
 
     useEffect(() => {
@@ -27,11 +28,13 @@ const ExperienceModal = ({ isOpen, onClose, onSave, experience = null }) => {
             if (formattedExp.endDate) {
                 formattedExp.endDate = new Date(formattedExp.endDate).toISOString().split('T')[0];
             }
+            const currentPosition = experiences.findIndex((exp) => exp.id === experience.id) + 1;
+            formattedExp.position = currentPosition > 0 ? currentPosition : 1;
             setFormData(formattedExp);
         } else {
-            setFormData(initialForm);
+            setFormData({ ...initialForm, position: experiences.length + 1 });
         }
-    }, [isOpen, experience]);
+    }, [isOpen, experience, experiences]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -72,6 +75,7 @@ const ExperienceModal = ({ isOpen, onClose, onSave, experience = null }) => {
         
         // Convert dates to ISO strings for Prisma
         const submitData = { ...formData };
+        submitData.position = Number(submitData.position) || 1;
         if (submitData.startDate) {
             submitData.startDate = new Date(submitData.startDate).toISOString();
         }
@@ -161,6 +165,22 @@ const ExperienceModal = ({ isOpen, onClose, onSave, experience = null }) => {
                                                 className="w-full bg-black/20 hover:bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all font-light [color-scheme:dark]"
                                             />
                                         </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-medium text-white/80">Position in Timeline <span className="text-red-400">*</span></label>
+                                        <select
+                                            name="position"
+                                            value={formData.position}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full bg-black/20 hover:bg-black/40 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all font-light"
+                                        >
+                                            {Array.from({ length: experience ? experiences.length : experiences.length + 1 }, (_, i) => i + 1).map((position) => (
+                                                <option key={position} value={position} className="bg-[#13111c] text-white">
+                                                    Position {position}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className="space-y-1.5">
                                         <div className="flex justify-between items-center">

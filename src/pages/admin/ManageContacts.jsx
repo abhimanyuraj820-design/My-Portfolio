@@ -147,7 +147,7 @@ const ManageContacts = () => {
         <div className="flex" style={pageBg}>
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            <div className="flex-1 md:ml-64">
+            <div className="flex-1 md:ml-64 overflow-x-hidden">
                 {/* Mobile bar */}
                 <div className="md:hidden flex items-center gap-3 px-5 py-4 sticky top-0 z-30"
                     style={{ background: "rgba(11,15,25,0.92)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>

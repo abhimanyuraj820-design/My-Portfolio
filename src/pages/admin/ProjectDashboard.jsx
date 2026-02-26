@@ -5,6 +5,7 @@ import ProjectModal from '../../components/admin/ProjectModal';
 import Sidebar from '../../components/admin/Sidebar';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'sonner';
+import API_BASE_URL from '../../config';
 
 const CATEGORIES = ['All', 'Web', 'App', 'AI', 'Design'];
 const SORTS = ['Newest', 'Oldest', 'Featured First'];
@@ -26,7 +27,7 @@ const ProjectDashboard = () => {
         try {
             setIsLoading(true);
             const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:5000/api/projects', {
+            const res = await fetch(`${API_BASE_URL}/api/projects`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!res.ok) throw new Error('Failed to fetch projects');
@@ -101,7 +102,7 @@ const ProjectDashboard = () => {
         if (window.confirm('Are you sure you want to delete this project?')) {
             try {
                 const token = localStorage.getItem('token');
-                const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
+                const res = await fetch(`${API_BASE_URL}/api/projects/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -119,8 +120,8 @@ const ProjectDashboard = () => {
         try {
             const token = localStorage.getItem('token');
             const url = editingProject
-                ? `http://localhost:5000/api/projects/${editingProject.id}`
-                : 'http://localhost:5000/api/projects';
+                ? `${API_BASE_URL}/api/projects/${editingProject.id}`
+                : `${API_BASE_URL}/api/projects`;
 
             const method = editingProject ? 'PUT' : 'POST';
 

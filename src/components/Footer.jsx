@@ -6,6 +6,7 @@ import { styles } from "../styles";
 import { FaGithub, FaLinkedin, FaInstagram, FaFacebook, FaTwitter, FaArrowUp } from "react-icons/fa";
 
 import { logo } from "../assets";
+import API_BASE_URL from "../config";
 
 const Footer = () => {
     const scrollTop = () => {
@@ -19,7 +20,7 @@ const Footer = () => {
     React.useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/settings");
+                const res = await fetch(`${API_BASE_URL}/api/settings`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data.socialLinks) {

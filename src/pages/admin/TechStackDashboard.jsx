@@ -190,16 +190,13 @@ const TechStackDashboard = () => {
                             {/* Filters & Actions Container */}
                             <div className="flex flex-col sm:flex-row w-full md:w-auto gap-4 sm:items-center">
 
-                                {/* Category Pills */}
-                                <div className="flex overflow-x-auto no-scrollbar gap-2 pb-1 sm:pb-0 hide-scrollbar">
+                                {/* Category Filter */}
+                                <div className="flex bg-[#161822] p-1.5 rounded-xl border border-[#252836] w-full md:w-fit overflow-x-auto custom-scrollbar flex-nowrap shrink-0">
                                     {CATEGORIES.map(cat => (
                                         <button
                                             key={cat}
                                             onClick={() => setActiveCategory(cat)}
-                                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${activeCategory === cat
-                                                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30 shadow-[0_0_15px_rgba(34,211,238,0.2)]'
-                                                : 'bg-transparent text-white/50 border-transparent hover:text-white hover:bg-white/5 hover:border-white/10'
-                                                }`}
+                                            className={`flex-1 min-w-[90px] md:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${activeCategory === cat ? 'bg-indigo-600 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
                                         >
                                             {cat}
                                         </button>
@@ -253,9 +250,9 @@ const TechStackDashboard = () => {
                                             </button>
 
                                             <div className="flex flex-col items-center text-center gap-3">
-                                                <div 
+                                                <div
                                                     className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-colors shadow-inner overflow-hidden p-2"
-                                                    style={{ 
+                                                    style={{
                                                         borderColor: skill.color ? `${skill.color}40` : 'rgba(255,255,255,0.1)',
                                                         boxShadow: skill.color ? `inset 0 0 20px ${skill.color}20` : 'none'
                                                     }}
@@ -289,7 +286,7 @@ const TechStackDashboard = () => {
                                                     <div className="w-full h-1.5 bg-black/50 rounded-full overflow-hidden border border-white/5">
                                                         <div
                                                             className="h-full rounded-full"
-                                                            style={{ 
+                                                            style={{
                                                                 width: `${skill.proficiency}%`,
                                                                 backgroundColor: skill.color || '#22d3ee',
                                                                 boxShadow: skill.color ? `0 0 10px ${skill.color}` : 'none'

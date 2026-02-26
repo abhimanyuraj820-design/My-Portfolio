@@ -278,7 +278,7 @@ const ManageBlogs = () => {
         <div className="flex min-h-screen bg-[#0f1117]">
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            <div className="flex-1 md:ml-64 min-h-screen">
+            <div className="flex-1 md:ml-64 min-h-screen overflow-x-hidden">
                 {/* Mobile Header */}
                 <div className="md:hidden flex items-center gap-4 p-4 bg-[#161822] border-b border-[#252836] sticky top-0 z-30">
                     {view === 'list' ? (

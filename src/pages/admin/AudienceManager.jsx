@@ -172,60 +172,62 @@ const AudienceManager = () => {
                             </div>
 
                             {/* Table */}
-                            <div className="bg-[#1a1d2e] border border-[#252836] rounded-xl overflow-hidden shadow-xl" data-lenis-prevent>
-                                <table className="w-full text-left border-collapse">
-                                    <thead className="bg-[#161822]">
-                                        <tr>
-                                            <th className="py-4 px-6 text-xs font-semibold text-white/40 uppercase tracking-wider">Email</th>
-                                            <th className="py-4 px-6 text-xs font-semibold text-white/40 uppercase tracking-wider text-center">Status</th>
-                                            <th className="py-4 px-6 text-xs font-semibold text-white/40 uppercase tracking-wider text-right">Subscribed</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-[#252836]">
-                                        {loading ? (
+                            <div className="bg-[#1a1d2e] border border-[#252836] rounded-xl overflow-x-auto shadow-xl" data-lenis-prevent>
+                                <div className="min-w-[500px]">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead className="bg-[#161822]">
                                             <tr>
-                                                <td colSpan="3" className="py-12 text-center">
-                                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
-                                                </td>
+                                                <th className="py-4 px-6 text-xs font-semibold text-white/40 uppercase tracking-wider">Email</th>
+                                                <th className="py-4 px-6 text-xs font-semibold text-white/40 uppercase tracking-wider text-center">Status</th>
+                                                <th className="py-4 px-6 text-xs font-semibold text-white/40 uppercase tracking-wider text-right">Subscribed</th>
                                             </tr>
-                                        ) : filteredSubscribers.length > 0 ? (
-                                            filteredSubscribers.map((sub, i) => (
-                                                <tr key={sub.id} className="hover:bg-white/[0.02] transition-colors group">
-                                                    <td className="py-4 px-6">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${sub.status === 'Active' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-500/20 text-gray-400'}`}>
-                                                                {sub.email.charAt(0).toUpperCase()}
-                                                            </div>
-                                                            <span className="text-sm font-medium text-white/90">{sub.email}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="py-4 px-6 text-center">
-                                                        <button
-                                                            onClick={() => toggleStatus(sub)}
-                                                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${sub.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20' : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'}`}
-                                                            title="Click to toggle status"
-                                                        >
-                                                            {sub.status === 'Active' ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                                                            {sub.status}
-                                                        </button>
-                                                    </td>
-                                                    <td className="py-4 px-6 text-sm text-white/40 text-right">
-                                                        {new Date(sub.subscribedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        </thead>
+                                        <tbody className="divide-y divide-[#252836]">
+                                            {loading ? (
+                                                <tr>
+                                                    <td colSpan="3" className="py-12 text-center">
+                                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
                                                     </td>
                                                 </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan="3" className="py-12 text-center text-white/40">
-                                                    <div className="flex flex-col items-center justify-center">
-                                                        <Mail size={32} className="mb-3 text-white/20" />
-                                                        <p>No subscribers found</p>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                                            ) : filteredSubscribers.length > 0 ? (
+                                                filteredSubscribers.map((sub, i) => (
+                                                    <tr key={sub.id} className="hover:bg-white/[0.02] transition-colors group">
+                                                        <td className="py-4 px-6">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${sub.status === 'Active' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-500/20 text-gray-400'}`}>
+                                                                    {sub.email.charAt(0).toUpperCase()}
+                                                                </div>
+                                                                <span className="text-sm font-medium text-white/90">{sub.email}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="py-4 px-6 text-center">
+                                                            <button
+                                                                onClick={() => toggleStatus(sub)}
+                                                                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${sub.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20' : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'}`}
+                                                                title="Click to toggle status"
+                                                            >
+                                                                {sub.status === 'Active' ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+                                                                {sub.status}
+                                                            </button>
+                                                        </td>
+                                                        <td className="py-4 px-6 text-sm text-white/40 text-right">
+                                                            {new Date(sub.subscribedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan="3" className="py-12 text-center text-white/40">
+                                                        <div className="flex flex-col items-center justify-center">
+                                                            <Mail size={32} className="mb-3 text-white/20" />
+                                                            <p>No subscribers found</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
