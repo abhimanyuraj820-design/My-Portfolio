@@ -30,7 +30,7 @@ const ServiceCard = ({ id, index, title, icon, description, price, deliveryTime,
     return (
         <div className="xs:w-[250px] w-full cursor-pointer group" onClick={() => navigate(`/services/${id}`, { state: { from: '/' } })}>
             <motion.div
-                variants={fadeIn("right", "spring", index * 0.5, 0.75)}
+                variants={fadeIn("right", "spring", Math.min(index * 0.12, 0.36), 0.75)}
                 className="w-full green-pink-gradient p-[1px] rounded-[20px] shadow-card group-hover:-translate-y-2 transition-transform duration-300"
             >
                 <div className="bg-tertiary rounded-[20px] py-5 px-8 min-h-[280px] flex justify-evenly items-center flex-col">
@@ -62,8 +62,7 @@ const STATIC_SERVICES = [
 
 // ── About Component ──────────────────────────────────
 const About = () => {
-    const [services, setServices] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [services, setServices] = useState(STATIC_SERVICES);
 
     useEffect(() => {
         const fetchServices = async () => {
@@ -75,14 +74,12 @@ const About = () => {
                     const active = data
                         .filter(s => s.status === "Active")
                         .sort((a, b) => (a.priorityOrder ?? 0) - (b.priorityOrder ?? 0));
-                    setServices(active.length > 0 ? active : STATIC_SERVICES);
-                } else {
-                    setServices(STATIC_SERVICES);
+                    if (active.length > 0) {
+                        setServices(active);
+                    }
                 }
             } catch {
-                setServices(STATIC_SERVICES);
-            } finally {
-                setLoading(false);
+                // Keep pre-rendered fallback services if API is unavailable
             }
         };
         fetchServices();
@@ -104,27 +101,21 @@ const About = () => {
                 As a Freelance Web Developer, I design and develop custom websites and advanced Android media player applications, focusing on user experience and functionality. By leveraging skills in Kotlin, XML, and Next.js, I emphasize clean, scalable, and efficient code to deliver tailored digital solutions.
             </motion.p>
 
-            {loading ? (
-                <div className="mt-20 flex justify-center">
-                    <div className="w-8 h-8 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
-                </div>
-            ) : (
-                <div className="mt-20 flex flex-wrap gap-10">
-                    {services.map((service, index) => (
-                        <ServiceCard
-                            key={service.id || service.title}
-                            id={service.id}
-                            index={index}
-                            title={service.title}
-                            icon={service.icon}
-                            description={service.description}
-                            price={service.price}
-                            deliveryTime={service.deliveryTime}
-                            features={service.features}
-                        />
-                    ))}
-                </div>
-            )}
+            <div className="mt-20 flex flex-wrap gap-10">
+                {services.map((service, index) => (
+                    <ServiceCard
+                        key={service.id || service.title}
+                        id={service.id}
+                        index={index}
+                        title={service.title}
+                        icon={service.icon}
+                        description={service.description}
+                        price={service.price}
+                        deliveryTime={service.deliveryTime}
+                        features={service.features}
+                    />
+                ))}
+            </div>
         </>
     );
 };

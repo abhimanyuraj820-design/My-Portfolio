@@ -60,13 +60,13 @@ const TechCard = ({ skill, index }) => {
             viewport={{ once: true, margin: "-50px" }}
             transition={{
                 duration: 0.8,
-                delay: index * 0.05,
+                delay: Math.min(index * 0.02, 0.18),
                 type: "spring",
                 bounce: 0.4,
             }}
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
-            className="relative perspective-1000" // Requires perspective for 3D tilts
+            className="relative perspective-1000 w-full flex justify-center" // Requires perspective for 3D tilts
         >
             <motion.div
                 animate={{
@@ -79,7 +79,7 @@ const TechCard = ({ skill, index }) => {
                     delay: index * 0.15,
                 }}
                 whileHover={{ scale: 1.05, zIndex: 50, rotateY: 5, rotateX: 5 }}
-                className="group relative w-32 h-36 sm:w-36 sm:h-40 bg-gradient-to-b from-[#110e1a]/95 to-[#08060f]/95 backdrop-blur-2xl border border-white/5 rounded-3xl flex flex-col items-center justify-center shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-pointer preserve-3d"
+                className="group relative w-full max-w-[140px] h-32 xs:h-36 sm:max-w-[150px] sm:h-40 bg-gradient-to-b from-[#110e1a]/95 to-[#08060f]/95 backdrop-blur-2xl border border-white/5 rounded-3xl flex flex-col items-center justify-center shadow-[0_15px_35px_rgba(0,0,0,0.6)] cursor-pointer preserve-3d"
                 style={{ transformStyle: 'preserve-3d' }}
             >
                 {/* 1. Ambient Back Glow (Intensifies on hover) */}
@@ -257,7 +257,7 @@ const Tech = () => {
             </motion.div>
 
             {/* Honeycomb/Staggered Floating Grid */}
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-12 sm:gap-x-12 sm:gap-y-16 max-w-[1000px] w-full px-4 relative z-20">
+            <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-x-4 gap-y-8 sm:gap-x-8 sm:gap-y-12 max-w-[1000px] w-full px-3 sm:px-4 relative z-20">
                 {featuredSkills.map((skill, index) => (
                     <TechCard
                         key={skill.id || skill.name}

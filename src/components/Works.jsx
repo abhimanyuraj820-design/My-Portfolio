@@ -35,10 +35,29 @@ const ProjectCard = ({
 }) => {
     const [imageError, setImageError] = useState(false);
     const hasImage = Boolean(image) && !imageError;
+    const primaryLink = live_link || source_code_link;
+
+    const handleCardRedirect = () => {
+        if (!primaryLink) return;
+        window.open(primaryLink, "_self");
+    };
 
     return (
         <motion.div style={skewStyle} className="h-full">
-            <div className='bg-tertiary p-5 rounded-2xl w-full shadow-card border border-white/5 hover:border-white/15 transition-colors duration-200 h-full flex flex-col'>
+            <div
+                className='bg-tertiary p-5 rounded-2xl w-full shadow-card border border-white/5 hover:border-white/15 transition-colors duration-200 h-full flex flex-col'
+                onClick={handleCardRedirect}
+                role={primaryLink ? 'link' : undefined}
+                tabIndex={primaryLink ? 0 : -1}
+                onKeyDown={(e) => {
+                    if (!primaryLink) return;
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleCardRedirect();
+                    }
+                }}
+                style={{ cursor: primaryLink ? 'pointer' : 'default' }}
+            >
                 <div className='relative w-full h-[230px] overflow-hidden rounded-2xl bg-slate-900 flex-shrink-0'>
                     {hasImage ? (
                         <img
@@ -68,7 +87,10 @@ const ProjectCard = ({
                         {source_code_link && (
                             <button
                                 type='button'
-                                onClick={() => window.open(source_code_link, "_blank")}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(source_code_link, "_blank");
+                                }}
                                 className='pointer-events-auto inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-full bg-black/80 text-white backdrop-blur-sm hover:bg-black transition-colors'
                             >
                                 <Github size={16} />
@@ -78,7 +100,10 @@ const ProjectCard = ({
                         {live_link && (
                             <button
                                 type='button'
-                                onClick={() => window.open(live_link, "_blank")}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(live_link, "_blank");
+                                }}
                                 className='pointer-events-auto inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-full bg-violet-500 text-white hover:bg-violet-600 transition-colors'
                             >
                                 <Globe2 size={16} />
